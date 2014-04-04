@@ -1,0 +1,12 @@
+{
+    "name": "hc-sj",
+    "description": "Henchcat: Space Jerk - A game about my cat",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "gulp": "3.5.6",
+        "gulp-browserify": "",
+        "gulp-rename": "",
+        "gulp-plumber": ""
+    }
+}
