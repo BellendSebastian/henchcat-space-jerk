@@ -9,11 +9,13 @@ function Renderer() {
     this.camera = new THREE.PerspectiveCamera(45, (1280 / 720), 1, 1000);
     this.camera.position = new THREE.Vector3(0, 0, 100);
     this.scene = new THREE.Scene();
+
+    // Basic ambient light
     var light = new THREE.AmbientLight( 0x888888 );
     this.scene.add(light);
 
-    // Testing area
-    var geometry = new THREE.SphereGeometry(400, 32, 32);
+    // Starfield
+    var geometry = new THREE.SphereGeometry(1000, 32, 32);
     var material = new THREE.MeshBasicMaterial();
     material.map = THREE.ImageUtils.loadTexture('img/starfield.jpg');
     material.side = THREE.BackSide;
