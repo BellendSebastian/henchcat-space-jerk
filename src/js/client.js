@@ -1,3 +1,2 @@
 var Game = require('./core/Game');
-
-var g = new Game();
+window.g = new Game();

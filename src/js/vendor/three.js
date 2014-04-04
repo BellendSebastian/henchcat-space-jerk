@@ -37758,3 +37758,4 @@ THREE.ShaderFlares = {
 
 };
 
+module.exports = THREE;

@@ -1,4 +1,4 @@
-var THREE = require('../vendor/three');
+var Renderer = require('./Renderer');
 
 function Game() {
     'use strict';
@@ -10,6 +10,8 @@ function Game() {
         function( callback ){
             window.setTimeout(callback, 1000 / 60);
         };
+
+    this.renderer = new Renderer();
 
     this.loop();
 }
@@ -23,12 +25,12 @@ Game.prototype.loop = function () {
 
 Game.prototype.update = function () {
     'use strict';
-
+    this.renderer.update();
 };
 
 Game.prototype.render = function () {
     'use strict';
-
+    this.renderer.render();
 };
 
 module.exports = Game;
