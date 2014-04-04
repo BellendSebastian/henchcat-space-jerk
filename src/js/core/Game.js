@@ -1,4 +1,5 @@
 var Renderer = require('./Renderer');
+var Planet = require('../entities/Planet');
 
 function Game() {
     'use strict';
@@ -12,6 +13,11 @@ function Game() {
         };
 
     this.renderer = new Renderer();
+    this.entities = [];
+
+    var testPlanet = new Planet();
+    this.entities.push(testPlanet);
+    this.renderer.scene.add(testPlanet.getMesh());
 
     this.loop();
 }
@@ -26,11 +32,17 @@ Game.prototype.loop = function () {
 Game.prototype.update = function () {
     'use strict';
     this.renderer.update();
+    this.entities.forEach(function (item) {
+        item.update();
+    });
 };
 
 Game.prototype.render = function () {
     'use strict';
     this.renderer.render();
+    this.entities.forEach(function (item) {
+        item.render();
+    });
 };
 
 module.exports = Game;
