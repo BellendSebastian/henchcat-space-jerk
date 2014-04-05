@@ -104,10 +104,10 @@ var THREE = require('../vendor/three');
 function Renderer() {
     'use strict';
     this.renderer = new THREE.WebGLRenderer();
-    this.renderer.setSize(1280, 720);
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this.renderer.domElement);
 
-    this.camera = new THREE.PerspectiveCamera(45, (1280 / 720), 1, 3000);
+    this.camera = new THREE.PerspectiveCamera(45, (window.innerWidth / window.innerHeight), 1, 3000);
     this.camera.position = new THREE.Vector3(0, 0, 100);
     this.scene = new THREE.Scene();
 
