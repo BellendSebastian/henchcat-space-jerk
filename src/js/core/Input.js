@@ -1,22 +1,21 @@
 function Input() {
     'use strict';
-    this.keysDown = [];
+    this._keysDown = {};
 }
 
 Input.prototype.keyDown = function (event) {
     'use strict';
-    console.log(event);
-    this.keysDown[event.keyCode] = true;
+    this._keysDown[event.keyCode] = (new Date()).getTime();
 };
 
 Input.prototype.keyUp = function (event) {
     'use strict';
-    this.keysDown[event.keyCode] = false;
+    this._keysDown[event.keyCode] = undefined;
 };
 
 Input.prototype.isKeyPressed = function (keyCode) {
     'use strict';
-    return this.keysDown[keyCode] === true;
+    return this._keysDown[keyCode] !== undefined;
 };
 
 module.exports = Input;

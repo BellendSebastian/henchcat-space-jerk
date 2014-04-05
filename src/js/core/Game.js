@@ -28,8 +28,8 @@ function Game() {
 Game.prototype.listeners = function () {
     'use strict';
 
-    document.addEventListener('keydown', this.input.keyDown, false);
-    document.addEventListener('keyup', this.input.keyUp, false);
+    document.addEventListener('keydown', this.input.keyDown.bind(this.input), false);
+    document.addEventListener('keyup', this.input.keyUp.bind(this.input), false);
 };
 
 Game.prototype.loop = function () {
@@ -59,7 +59,16 @@ Game.prototype.render = function () {
 Game.prototype.handleInput = function () {
     'use strict';
     if (this.input.isKeyPressed(39)) { // right arrow
-        console.log('LOOK AT THIS MESSAGE');
+        this.renderer.camera.position.x += 1;
+    }
+    if (this.input.isKeyPressed(37)) {
+        this.renderer.camera.position.x -= 1;
+    }
+    if (this.input.isKeyPressed(38)) {
+        this.renderer.camera.position.y += 1;
+    }
+    if (this.input.isKeyPressed(40)) {
+        this.renderer.camera.position.y -= 1;
     }
 };
 
