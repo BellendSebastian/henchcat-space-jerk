@@ -1,13 +1,15 @@
-var THREE = require('../vendor/three');
+var CONFIG = require('../config');
 
 function Renderer() {
     'use strict';
-    this.renderer = new THREE.WebGLRenderer();
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer = new THREE.WebGLRenderer({
+        antialiasing: true
+    });
+    this.renderer.setSize(CONFIG.width, CONFIG.height);
     document.body.appendChild(this.renderer.domElement);
 
     // Camera guff
-    this.camera = new THREE.PerspectiveCamera(45, (window.innerWidth / window.innerHeight), 1, 3000);
+    this.camera = new THREE.PerspectiveCamera(45, (CONFIG.width / CONFIG.height), 1, 3000);
     this.camera.position = new THREE.Vector3(0, 0, 100);
     this.cameraLight = new THREE.PointLight(0xffffff);
     this.cameraLight.position = this.camera.position;
@@ -17,9 +19,9 @@ function Renderer() {
     // Basic ambient light
     var light = new THREE.AmbientLight(0x444444);
     this.scene.add(light);
-    var light = new THREE.DirectionalLight(0x444444);
-    light.position.set(55, 3, 405);
-    this.scene.add(light);
+    var delight = new THREE.DirectionalLight(0x444444);
+    delight.position.set(55, 3, 405);
+    this.scene.add(delight);
 
     // Starfield
     var geometry = new THREE.SphereGeometry(1000, 32, 32);
@@ -52,6 +54,17 @@ function Renderer() {
     var particleSystem = new THREE.ParticleSystem(particles, pmat);
 
     this.scene.add(particleSystem);
+
+    // Post processing
+    this.composer = new THREE.EffectComposer(this.renderer);
+    this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
+
+    var effect = new THREE.ShaderPass(THREE.VignetteShader);
+    effect.uniforms['offset'].value = 0.7;
+    effect.uniforms['darkness'].value = 2.1;
+    effect.renderToScreen = true;
+
+    this.composer.addPass(effect);
 }
 
 Renderer.prototype.update = function () {
@@ -61,7 +74,7 @@ Renderer.prototype.update = function () {
 
 Renderer.prototype.render = function () {
     'use strict';
-    this.renderer.render(this.scene, this.camera);
+    this.composer.render();
 };
 
 module.exports = Renderer;

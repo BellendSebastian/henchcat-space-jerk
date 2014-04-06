@@ -1,6 +1,7 @@
 var Renderer = require('./Renderer');
 var Input = require('./Input');
 var Planet = require('../entities/Planet');
+var Player = require('../characters/Player');
 
 function Game() {
     'use strict';
@@ -20,6 +21,10 @@ function Game() {
     var testPlanet = new Planet();
     this.entities.push(testPlanet);
     this.renderer.scene.add(testPlanet.getMesh());
+
+    this.player = new Player();
+    this.entities.push(this.player);
+    this.renderer.scene.add(this.player.getMesh());
 
     this.listeners();
     this.loop();
