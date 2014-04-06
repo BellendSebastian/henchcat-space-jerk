@@ -18,24 +18,11 @@ function Planet() {
 
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.position = new THREE.Vector3(-40, 20, -45);
-
-    var cloudGeometry = new THREE.SphereGeometry(54.5, 32, 32);
-    var cloudMaterial = new THREE.MeshPhongMaterial({
-        map: THREE.ImageUtils.loadTexture('img/earthcloudmap.jpg'),
-        side: THREE.DoubleSide,
-        opacity: 0.8,
-        transparent: true,
-        depthWrite: false
-    });
-
-    this.cloudMesh = new THREE.Mesh(cloudGeometry, cloudMaterial);
-    //this.mesh.add(this.cloudMesh);
 }
 
 Planet.prototype.update = function () {
     'use strict';
-    this.cloudMesh.rotation.y += 0.001;
-    this.mesh.rotation.y += 0.0001;
+    this.mesh.rotation.y += 0.0002;
 };
 
 module.exports = Planet;

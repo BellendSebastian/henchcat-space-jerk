@@ -10,8 +10,8 @@ function Player () {
     var geometry = new THREE.CubeGeometry(10, 10, 10);
     var material = new THREE.MeshPhongMaterial();
     this.mesh = new THREE.Mesh(geometry, material);
-    this.currentVelocity = new THREE.Vector2(0, 0);
-    this.position = new THREE.Vector2(0, 0);
+    this.currentVelocity = new THREE.Vector3(0, 0, 30);
+    this.position = new THREE.Vector3(0, 0, 30);
     this.maxThrust = 5;
     this.minThrust = -5;
     this.thrustDecay = 0.2;
@@ -25,6 +25,8 @@ Player.prototype.addThrust = function (x, y) {
 
 Player.prototype.update = function () {
     'use strict';
+    this.mesh.position = this.position;
+    /*
     this.currentVelocity.x = (this.currentVelocity > 0)
         ? this.currentVelocity.x - this.thrustDecay
         : this.currentVelocity.x + this.thrustDecay;
@@ -34,6 +36,7 @@ Player.prototype.update = function () {
     this.position.x += this.currentVelocity;
     this.position.y += this.currentVelocity;
     this.mesh.position = this.position;
+    */
 };
 
 module.exports = Player;

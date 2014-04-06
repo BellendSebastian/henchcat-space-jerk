@@ -24,13 +24,14 @@ function Renderer() {
     this.scene.add(delight);
 
     // Starfield
-    var geometry = new THREE.SphereGeometry(1000, 32, 32);
+    var geometry = new THREE.CubeGeometry(2000, 2000, 2000);
     var material = new THREE.MeshBasicMaterial({
         map: THREE.ImageUtils.loadTexture('img/starfield.jpg'),
         side: THREE.BackSide
     });
     var starfield = new THREE.Mesh(geometry, material);
     starfield.position = new THREE.Vector3(0, 0, 0);
+    this.camera.add(starfield);
     this.scene.add(starfield);
 
     var count = 2500;
@@ -60,8 +61,8 @@ function Renderer() {
     this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
 
     var effect = new THREE.ShaderPass(THREE.VignetteShader);
-    effect.uniforms['offset'].value = 0.7;
-    effect.uniforms['darkness'].value = 2.1;
+    effect.uniforms.offset.value = 0.7;
+    effect.uniforms.darkness.value = 2.1;
     effect.renderToScreen = true;
 
     this.composer.addPass(effect);

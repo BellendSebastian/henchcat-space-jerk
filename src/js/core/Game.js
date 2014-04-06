@@ -75,6 +75,29 @@ Game.prototype.handleInput = function () {
     if (this.input.isKeyPressed(40)) {
         this.renderer.camera.position.y -= 1;
     }
+    if (this.input.isKeyPressed(187)) {
+        if (this.renderer.camera.position.z > 50) {
+            this.renderer.camera.position.z -= 1;
+        }
+    }
+    if (this.input.isKeyPressed(189)) {
+        if (this.renderer.camera.position.z < 400) {
+            this.renderer.camera.position.z += 1;
+        }
+    }
+
+    if (this.input.isKeyPressed(87)) {
+        this.player.position.y += 1;
+    }
+    if (this.input.isKeyPressed(83)) {
+        this.player.position.y -= 1;
+    }
+    if (this.input.isKeyPressed(65)) {
+        this.player.position.x -= 1;
+    }
+    if (this.input.isKeyPressed(68)) {
+        this.player.position.x += 1;
+    }
 };
 
 module.exports = Game;

@@ -30,8 +30,8 @@ function Player () {
     var geometry = new THREE.CubeGeometry(10, 10, 10);
     var material = new THREE.MeshPhongMaterial();
     this.mesh = new THREE.Mesh(geometry, material);
-    this.currentVelocity = new THREE.Vector2(0, 0);
-    this.position = new THREE.Vector2(0, 0);
+    this.currentVelocity = new THREE.Vector3(0, 0, 30);
+    this.position = new THREE.Vector3(0, 0, 30);
     this.maxThrust = 5;
     this.minThrust = -5;
     this.thrustDecay = 0.2;
@@ -45,6 +45,8 @@ Player.prototype.addThrust = function (x, y) {
 
 Player.prototype.update = function () {
     'use strict';
+    this.mesh.position = this.position;
+    /*
     this.currentVelocity.x = (this.currentVelocity > 0)
         ? this.currentVelocity.x - this.thrustDecay
         : this.currentVelocity.x + this.thrustDecay;
@@ -54,6 +56,7 @@ Player.prototype.update = function () {
     this.position.x += this.currentVelocity;
     this.position.y += this.currentVelocity;
     this.mesh.position = this.position;
+    */
 };
 
 module.exports = Player;
@@ -142,6 +145,29 @@ Game.prototype.handleInput = function () {
     if (this.input.isKeyPressed(40)) {
         this.renderer.camera.position.y -= 1;
     }
+    if (this.input.isKeyPressed(187)) {
+        if (this.renderer.camera.position.z > 50) {
+            this.renderer.camera.position.z -= 1;
+        }
+    }
+    if (this.input.isKeyPressed(189)) {
+        if (this.renderer.camera.position.z < 400) {
+            this.renderer.camera.position.z += 1;
+        }
+    }
+
+    if (this.input.isKeyPressed(87)) {
+        this.player.position.y += 1;
+    }
+    if (this.input.isKeyPressed(83)) {
+        this.player.position.y -= 1;
+    }
+    if (this.input.isKeyPressed(65)) {
+        this.player.position.x -= 1;
+    }
+    if (this.input.isKeyPressed(68)) {
+        this.player.position.x += 1;
+    }
 };
 
 module.exports = Game;
@@ -154,6 +180,7 @@ function Input() {
 
 Input.prototype.keyDown = function (event) {
     'use strict';
+    console.log(event);
     this._keysDown[event.keyCode] = (new Date()).getTime();
 };
 
@@ -196,13 +223,14 @@ function Renderer() {
     this.scene.add(delight);
 
     // Starfield
-    var geometry = new THREE.SphereGeometry(1000, 32, 32);
+    var geometry = new THREE.CubeGeometry(2000, 2000, 2000);
     var material = new THREE.MeshBasicMaterial({
         map: THREE.ImageUtils.loadTexture('img/starfield.jpg'),
         side: THREE.BackSide
     });
     var starfield = new THREE.Mesh(geometry, material);
     starfield.position = new THREE.Vector3(0, 0, 0);
+    this.camera.add(starfield);
     this.scene.add(starfield);
 
     var count = 2500;
@@ -232,8 +260,8 @@ function Renderer() {
     this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
 
     var effect = new THREE.ShaderPass(THREE.VignetteShader);
-    effect.uniforms['offset'].value = 0.7;
-    effect.uniforms['darkness'].value = 2.1;
+    effect.uniforms.offset.value = 0.7;
+    effect.uniforms.darkness.value = 2.1;
     effect.renderToScreen = true;
 
     this.composer.addPass(effect);
@@ -291,24 +319,11 @@ function Planet() {
 
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.position = new THREE.Vector3(-40, 20, -45);
-
-    var cloudGeometry = new THREE.SphereGeometry(54.5, 32, 32);
-    var cloudMaterial = new THREE.MeshPhongMaterial({
-        map: THREE.ImageUtils.loadTexture('img/earthcloudmap.jpg'),
-        side: THREE.DoubleSide,
-        opacity: 0.8,
-        transparent: true,
-        depthWrite: false
-    });
-
-    this.cloudMesh = new THREE.Mesh(cloudGeometry, cloudMaterial);
-    //this.mesh.add(this.cloudMesh);
 }
 
 Planet.prototype.update = function () {
     'use strict';
-    this.cloudMesh.rotation.y += 0.001;
-    this.mesh.rotation.y += 0.0001;
+    this.mesh.rotation.y += 0.0002;
 };
 
 module.exports = Planet;
