@@ -6,12 +6,19 @@ function Renderer() {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this.renderer.domElement);
 
+    // Camera guff
     this.camera = new THREE.PerspectiveCamera(45, (window.innerWidth / window.innerHeight), 1, 3000);
     this.camera.position = new THREE.Vector3(0, 0, 100);
+    this.cameraLight = new THREE.PointLight(0xffffff);
+    this.cameraLight.position = this.camera.position;
+
     this.scene = new THREE.Scene();
 
     // Basic ambient light
-    var light = new THREE.AmbientLight( 0x444444 );
+    var light = new THREE.AmbientLight(0x444444);
+    this.scene.add(light);
+    var light = new THREE.DirectionalLight(0x444444);
+    light.position.set(55, 3, 405);
     this.scene.add(light);
 
     // Starfield
@@ -49,6 +56,7 @@ function Renderer() {
 
 Renderer.prototype.update = function () {
     'use strict';
+    this.cameraLightPosition = this.camera.position;
 };
 
 Renderer.prototype.render = function () {
