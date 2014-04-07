@@ -10,6 +10,8 @@ function Player () {
     var geometry = new THREE.CubeGeometry(10, 10, 10);
     var material = new THREE.MeshPhongMaterial();
     this.mesh = new THREE.Mesh(geometry, material);
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
     this.currentVelocity = new THREE.Vector3(0, 0, 30);
     this.position = new THREE.Vector3(0, 0, 30);
     this.maxThrust = 5;

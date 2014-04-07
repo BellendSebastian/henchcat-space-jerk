@@ -5,7 +5,6 @@ function Input() {
 
 Input.prototype.keyDown = function (event) {
     'use strict';
-    console.log(event);
     this._keysDown[event.keyCode] = (new Date()).getTime();
 };
 

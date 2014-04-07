@@ -15,8 +15,9 @@ function Planet() {
         specularMap: THREE.ImageUtils.loadTexture('img/earthspec1k.jpg'),
         specular: new THREE.Color('grey')
     });
-
     this.mesh = new THREE.Mesh(geometry, material);
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
     this.mesh.position = new THREE.Vector3(-40, 20, -45);
 }
 

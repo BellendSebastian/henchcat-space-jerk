@@ -30,6 +30,8 @@ function Player () {
     var geometry = new THREE.CubeGeometry(10, 10, 10);
     var material = new THREE.MeshPhongMaterial();
     this.mesh = new THREE.Mesh(geometry, material);
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
     this.currentVelocity = new THREE.Vector3(0, 0, 30);
     this.position = new THREE.Vector3(0, 0, 30);
     this.maxThrust = 5;
@@ -95,6 +97,14 @@ function Game() {
     this.player = new Player();
     this.entities.push(this.player);
     this.renderer.scene.add(this.player.getMesh());
+
+    var sound = new Audio('audio/engine.mp3');
+    sound.volume = 0.4;
+    sound.addEventListener('ended', function () {
+        this.currentTime = 0;
+        this.play();
+    }, false);
+    sound.play();
 
     this.listeners();
     this.loop();
@@ -180,7 +190,6 @@ function Input() {
 
 Input.prototype.keyDown = function (event) {
     'use strict';
-    console.log(event);
     this._keysDown[event.keyCode] = (new Date()).getTime();
 };
 
@@ -202,7 +211,9 @@ var CONFIG = require('../config');
 function Renderer() {
     'use strict';
     this.renderer = new THREE.WebGLRenderer({
-        antialiasing: true
+        antialiasing: true,
+        shadowMapEnabled: true,
+        shadowMapSoft: true
     });
     this.renderer.setSize(CONFIG.width, CONFIG.height);
     document.body.appendChild(this.renderer.domElement);
@@ -210,7 +221,8 @@ function Renderer() {
     // Camera guff
     this.camera = new THREE.PerspectiveCamera(45, (CONFIG.width / CONFIG.height), 1, 3000);
     this.camera.position = new THREE.Vector3(0, 0, 100);
-    this.cameraLight = new THREE.PointLight(0xffffff);
+    this.cameraLight = new THREE.SpotLight(0xffffff);
+    this.cameraLight.castShadow = true;
     this.cameraLight.position = this.camera.position;
 
     this.scene = new THREE.Scene();
@@ -316,8 +328,9 @@ function Planet() {
         specularMap: THREE.ImageUtils.loadTexture('img/earthspec1k.jpg'),
         specular: new THREE.Color('grey')
     });
-
     this.mesh = new THREE.Mesh(geometry, material);
+    this.mesh.castShadow = true;
+    this.mesh.receiveShadow = true;
     this.mesh.position = new THREE.Vector3(-40, 20, -45);
 }
 

@@ -26,6 +26,14 @@ function Game() {
     this.entities.push(this.player);
     this.renderer.scene.add(this.player.getMesh());
 
+    var sound = new Audio('audio/engine.mp3');
+    sound.volume = 0.4;
+    sound.addEventListener('ended', function () {
+        this.currentTime = 0;
+        this.play();
+    }, false);
+    sound.play();
+
     this.listeners();
     this.loop();
 }

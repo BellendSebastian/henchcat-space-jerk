@@ -3,7 +3,9 @@ var CONFIG = require('../config');
 function Renderer() {
     'use strict';
     this.renderer = new THREE.WebGLRenderer({
-        antialiasing: true
+        antialiasing: true,
+        shadowMapEnabled: true,
+        shadowMapSoft: true
     });
     this.renderer.setSize(CONFIG.width, CONFIG.height);
     document.body.appendChild(this.renderer.domElement);
@@ -11,7 +13,8 @@ function Renderer() {
     // Camera guff
     this.camera = new THREE.PerspectiveCamera(45, (CONFIG.width / CONFIG.height), 1, 3000);
     this.camera.position = new THREE.Vector3(0, 0, 100);
-    this.cameraLight = new THREE.PointLight(0xffffff);
+    this.cameraLight = new THREE.SpotLight(0xffffff);
+    this.cameraLight.castShadow = true;
     this.cameraLight.position = this.camera.position;
 
     this.scene = new THREE.Scene();
