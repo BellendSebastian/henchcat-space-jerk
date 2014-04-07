@@ -74,6 +74,7 @@ var Renderer = require('./Renderer');
 var Input = require('./Input');
 var Planet = require('../entities/Planet');
 var Player = require('../characters/Player');
+var Utils = require('../utils/Utils');
 
 function Game() {
     'use strict';
@@ -144,16 +145,25 @@ Game.prototype.render = function () {
 Game.prototype.handleInput = function () {
     'use strict';
     if (this.input.isKeyPressed(39)) { // right arrow
-        this.renderer.camera.position.x += 1;
+        console.log(Utils.distanceFromCentre(this.renderer.camera.position));
+        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
+            this.renderer.camera.position.x += 1;
+        }
     }
     if (this.input.isKeyPressed(37)) {
-        this.renderer.camera.position.x -= 1;
+        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
+            this.renderer.camera.position.x -= 1;
+        }
     }
     if (this.input.isKeyPressed(38)) {
-        this.renderer.camera.position.y += 1;
+        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
+            this.renderer.camera.position.y += 1;
+        }
     }
     if (this.input.isKeyPressed(40)) {
-        this.renderer.camera.position.y -= 1;
+        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
+            this.renderer.camera.position.y -= 1;
+        }
     }
     if (this.input.isKeyPressed(187)) {
         if (this.renderer.camera.position.z > 50) {
@@ -182,7 +192,7 @@ Game.prototype.handleInput = function () {
 
 module.exports = Game;
 
-},{"../characters/Player":2,"../entities/Planet":8,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
+},{"../characters/Player":2,"../entities/Planet":8,"../utils/Utils":10,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
 function Input() {
     'use strict';
     this._keysDown = {};
@@ -345,4 +355,12 @@ module.exports = Planet;
 var Game = require('./core/Game');
 window.g = new Game();
 
-},{"./core/Game":4}]},{},[9])
+},{"./core/Game":4}],10:[function(require,module,exports){
+module.exports = {
+    'distanceFromCentre': function (vector) {
+        'use strict';
+        return Math.sqrt(Math.pow(0 - vector.x, 2) + Math.pow(0 - vector.y, 2));
+    }
+};
+
+},{}]},{},[9])

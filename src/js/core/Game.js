@@ -2,6 +2,7 @@ var Renderer = require('./Renderer');
 var Input = require('./Input');
 var Planet = require('../entities/Planet');
 var Player = require('../characters/Player');
+var Utils = require('../utils/Utils');
 
 function Game() {
     'use strict';
@@ -72,16 +73,25 @@ Game.prototype.render = function () {
 Game.prototype.handleInput = function () {
     'use strict';
     if (this.input.isKeyPressed(39)) { // right arrow
-        this.renderer.camera.position.x += 1;
+        console.log(Utils.distanceFromCentre(this.renderer.camera.position));
+        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
+            this.renderer.camera.position.x += 1;
+        }
     }
     if (this.input.isKeyPressed(37)) {
-        this.renderer.camera.position.x -= 1;
+        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
+            this.renderer.camera.position.x -= 1;
+        }
     }
     if (this.input.isKeyPressed(38)) {
-        this.renderer.camera.position.y += 1;
+        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
+            this.renderer.camera.position.y += 1;
+        }
     }
     if (this.input.isKeyPressed(40)) {
-        this.renderer.camera.position.y -= 1;
+        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
+            this.renderer.camera.position.y -= 1;
+        }
     }
     if (this.input.isKeyPressed(187)) {
         if (this.renderer.camera.position.z > 50) {
