@@ -102,8 +102,8 @@ function Game() {
     var sound = new Audio('audio/engine.mp3');
     sound.volume = 0.4;
     sound.addEventListener('ended', function () {
-        this.currentTime = 0;
-        this.play();
+        sound.currentTime = 0;
+        sound.play();
     }, false);
     sound.play();
 
@@ -145,25 +145,16 @@ Game.prototype.render = function () {
 Game.prototype.handleInput = function () {
     'use strict';
     if (this.input.isKeyPressed(39)) { // right arrow
-        console.log(Utils.distanceFromCentre(this.renderer.camera.position));
-        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
-            this.renderer.camera.position.x += 1;
-        }
+        this.renderer.camera.position.x += 1;
     }
     if (this.input.isKeyPressed(37)) {
-        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
-            this.renderer.camera.position.x -= 1;
-        }
+        this.renderer.camera.position.x -= 1;
     }
     if (this.input.isKeyPressed(38)) {
-        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
-            this.renderer.camera.position.y += 1;
-        }
+        this.renderer.camera.position.y += 1;
     }
     if (this.input.isKeyPressed(40)) {
-        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
-            this.renderer.camera.position.y -= 1;
-        }
+        this.renderer.camera.position.y -= 1;
     }
     if (this.input.isKeyPressed(187)) {
         if (this.renderer.camera.position.z > 50) {
@@ -255,7 +246,7 @@ function Renderer() {
     this.camera.add(starfield);
     this.scene.add(starfield);
 
-    var count = 2500;
+    var count = 5000;
     var particles = new THREE.Geometry();
     var pmat = new THREE.ParticleBasicMaterial({
         color: 0xFFFFFF,
@@ -281,12 +272,22 @@ function Renderer() {
     this.composer = new THREE.EffectComposer(this.renderer);
     this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
 
-    var effect = new THREE.ShaderPass(THREE.VignetteShader);
-    effect.uniforms.offset.value = 0.7;
-    effect.uniforms.darkness.value = 2.1;
-    effect.renderToScreen = true;
+    var rgbShader = new THREE.ShaderPass(THREE.RGBShiftShader);
+    rgbShader.uniforms.amount.value = 0.0038;
+    rgbShader.uniforms.angle.value = 4;
+    this.composer.addPass(rgbShader);
 
-    this.composer.addPass(effect);
+    var filmShader = new THREE.ShaderPass(THREE.FilmShader);
+    filmShader.uniforms.grayscale.value = 0;
+    filmShader.uniforms.sCount.value = 1024;
+    filmShader.uniforms.sIntensity.value = 0.2;
+    this.composer.addPass(filmShader);
+
+    var vignette = new THREE.ShaderPass(THREE.VignetteShader);
+    vignette.uniforms.offset.value = 0.7;
+    vignette.uniforms.darkness.value = 2.1;
+    vignette.renderToScreen = true;
+    this.composer.addPass(vignette);
 }
 
 Renderer.prototype.update = function () {

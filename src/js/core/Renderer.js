@@ -37,7 +37,7 @@ function Renderer() {
     this.camera.add(starfield);
     this.scene.add(starfield);
 
-    var count = 2500;
+    var count = 5000;
     var particles = new THREE.Geometry();
     var pmat = new THREE.ParticleBasicMaterial({
         color: 0xFFFFFF,
@@ -63,12 +63,22 @@ function Renderer() {
     this.composer = new THREE.EffectComposer(this.renderer);
     this.composer.addPass(new THREE.RenderPass(this.scene, this.camera));
 
-    var effect = new THREE.ShaderPass(THREE.VignetteShader);
-    effect.uniforms.offset.value = 0.7;
-    effect.uniforms.darkness.value = 2.1;
-    effect.renderToScreen = true;
+    var rgbShader = new THREE.ShaderPass(THREE.RGBShiftShader);
+    rgbShader.uniforms.amount.value = 0.0038;
+    rgbShader.uniforms.angle.value = 4;
+    this.composer.addPass(rgbShader);
 
-    this.composer.addPass(effect);
+    var filmShader = new THREE.ShaderPass(THREE.FilmShader);
+    filmShader.uniforms.grayscale.value = 0;
+    filmShader.uniforms.sCount.value = 1024;
+    filmShader.uniforms.sIntensity.value = 0.2;
+    this.composer.addPass(filmShader);
+
+    var vignette = new THREE.ShaderPass(THREE.VignetteShader);
+    vignette.uniforms.offset.value = 0.7;
+    vignette.uniforms.darkness.value = 2.1;
+    vignette.renderToScreen = true;
+    this.composer.addPass(vignette);
 }
 
 Renderer.prototype.update = function () {

@@ -30,8 +30,8 @@ function Game() {
     var sound = new Audio('audio/engine.mp3');
     sound.volume = 0.4;
     sound.addEventListener('ended', function () {
-        this.currentTime = 0;
-        this.play();
+        sound.currentTime = 0;
+        sound.play();
     }, false);
     sound.play();
 
@@ -73,25 +73,16 @@ Game.prototype.render = function () {
 Game.prototype.handleInput = function () {
     'use strict';
     if (this.input.isKeyPressed(39)) { // right arrow
-        console.log(Utils.distanceFromCentre(this.renderer.camera.position));
-        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
-            this.renderer.camera.position.x += 1;
-        }
+        this.renderer.camera.position.x += 1;
     }
     if (this.input.isKeyPressed(37)) {
-        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
-            this.renderer.camera.position.x -= 1;
-        }
+        this.renderer.camera.position.x -= 1;
     }
     if (this.input.isKeyPressed(38)) {
-        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
-            this.renderer.camera.position.y += 1;
-        }
+        this.renderer.camera.position.y += 1;
     }
     if (this.input.isKeyPressed(40)) {
-        if (Utils.distanceFromCentre(this.renderer.camera.position) < 100) {
-            this.renderer.camera.position.y -= 1;
-        }
+        this.renderer.camera.position.y -= 1;
     }
     if (this.input.isKeyPressed(187)) {
         if (this.renderer.camera.position.z > 50) {
