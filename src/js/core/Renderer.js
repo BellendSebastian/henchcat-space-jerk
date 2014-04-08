@@ -1,7 +1,6 @@
 var CONFIG = require('../config');
-var EnvironmentFactory = require('../utils/EnvironmentFactory');
 
-function Renderer() {
+function Renderer(scene) {
     'use strict';
     this.renderer = new THREE.WebGLRenderer({
         antialiasing: true,
@@ -17,18 +16,7 @@ function Renderer() {
     this.cameraLight = new THREE.SpotLight(0xffffff);
     this.cameraLight.castShadow = true;
     this.cameraLight.position = this.camera.position;
-    this.scene = new THREE.Scene();
-
-    // Basic ambient light
-    var light = new THREE.AmbientLight(0x444444);
-    this.scene.add(light);
-    var delight = new THREE.DirectionalLight(0x444444);
-    delight.position.set(55, 3, 405);
-    this.scene.add(delight);
-
-    // Starfield
-    this.scene.add(EnvironmentFactory.generateSkybox('img/starfield.jpg'));
-    this.scene.add(EnvironmentFactory.generateStars(5000));
+    this.scene = scene !== undefined ? scene : new THREE.Scene();
 
     // Post processing
     this.composer = new THREE.EffectComposer(this.renderer);

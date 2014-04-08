@@ -1,8 +1,6 @@
 var Renderer = require('./Renderer');
 var Input = require('./Input');
-var Planet = require('../entities/Planet');
-var Player = require('../characters/Player');
-var Utils = require('../utils/Utils');
+var TestScene = require('../scenes/TestScene');
 
 function Game() {
     'use strict';
@@ -15,25 +13,11 @@ function Game() {
             window.setTimeout(callback, 1000 / 60);
         };
 
-    this.renderer = new Renderer();
+    var testScene = new TestScene();
+
+    this.renderer = new Renderer(testScene.getScene());
     this.input = new Input();
-    this.entities = [];
-
-    var testPlanet = new Planet();
-    this.entities.push(testPlanet);
-    this.renderer.scene.add(testPlanet.getMesh());
-
-    this.player = new Player();
-    this.entities.push(this.player);
-    this.renderer.scene.add(this.player.getMesh());
-
-    var sound = new Audio('audio/engine.mp3');
-    sound.volume = 0.4;
-    sound.addEventListener('ended', function () {
-        sound.currentTime = 0;
-        sound.play();
-    }, false);
-    sound.play();
+    this.entities = testScene.getEntities();
 
     this.listeners();
     this.loop();
