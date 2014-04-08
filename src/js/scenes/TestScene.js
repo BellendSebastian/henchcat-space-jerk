@@ -14,9 +14,8 @@ function TestScene() {
     this.entities.push(testPlanet);
     this.scene.add(testPlanet.getMesh());
 
-    this.player = new Player();
+    this.player = new Player(this.scene);
     this.entities.push(this.player);
-    this.scene.add(this.player.getMesh());
 
     var sound = new Audio('audio/engine.mp3');
     sound.volume = 0.4;

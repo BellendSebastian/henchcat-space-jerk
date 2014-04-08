@@ -23,7 +23,7 @@ function Planet() {
 
 Planet.prototype.update = function () {
     'use strict';
-    this.mesh.rotation.y += 0.0002;
+    this.mesh.rotation.y += 0.0004;
 };
 
 module.exports = Planet;
