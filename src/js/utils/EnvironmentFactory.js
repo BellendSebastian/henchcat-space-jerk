@@ -1,18 +1,18 @@
 module.exports = {
-    'generateSkybox': function () {
+    'generateSkybox': function (texturePath) {
         'use strict';
         var geometry = new THREE.CubeGeometry(2000, 2000, 2000);
         var material = new THREE.MeshBasicMaterial({
-            map: THREE.ImageUtils.loadTexture('img/starfield.jpg'),
+            map: THREE.ImageUtils.loadTexture(texturePath),
             side: THREE.BackSide
         });
         var starfield = new THREE.Mesh(geometry, material);
         starfield.position = new THREE.Vector3(0, 0, 0);
         return starfield;
     },
-    'generateStars': function () {
+
+    'generateStars': function (count) {
         'use strict';
-        var count = 5000;
         var particles = new THREE.Geometry();
         var pmat = new THREE.ParticleBasicMaterial({
             color: 0xFFFFFF,

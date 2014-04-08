@@ -19,26 +19,9 @@ function Player () {
     this.thrustDecay = 0.2;
 }
 
-Player.prototype.addThrust = function (x, y) {
-    'use strict';
-    this.currentVelocity.x += x;
-    this.currentVelocity.y += y;
-};
-
 Player.prototype.update = function () {
     'use strict';
     this.mesh.position = this.position;
-    /*
-    this.currentVelocity.x = (this.currentVelocity > 0)
-        ? this.currentVelocity.x - this.thrustDecay
-        : this.currentVelocity.x + this.thrustDecay;
-    this.currentVelocity.y = (this.currentVelocity > 0)
-        ? this.currentVelocity.y - this.trustDecay
-        : this.currentVelocity.y + this.thrustDecay;
-    this.position.x += this.currentVelocity;
-    this.position.y += this.currentVelocity;
-    this.mesh.position = this.position;
-    */
 };
 
 module.exports = Player;

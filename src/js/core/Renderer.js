@@ -27,8 +27,8 @@ function Renderer() {
     this.scene.add(delight);
 
     // Starfield
-    this.scene.add(EnvironmentFactory.generateSkybox());
-    this.scene.add(EnvironmentFactory.generateStars());
+    this.scene.add(EnvironmentFactory.generateSkybox('img/starfield.jpg'));
+    this.scene.add(EnvironmentFactory.generateStars(5000));
 
     // Post processing
     this.composer = new THREE.EffectComposer(this.renderer);
