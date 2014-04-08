@@ -13,15 +13,22 @@ function Game() {
             window.setTimeout(callback, 1000 / 60);
         };
 
-    var testScene = new TestScene();
-
-    this.renderer = new Renderer(testScene.getScene());
-    this.input = new Input();
-    this.entities = testScene.getEntities();
+    // Abstract initialisation of renderer, input
+    // and all that kinda stuff so it can be reused
+    // to switch between scenes
+    this.currentScene = this.initScene(new TestScene());
 
     this.listeners();
     this.loop();
 }
+
+Game.prototype.initScene = function (scene) {
+    'use strict';
+    this.input = scene.getInput();
+    this.renderer = new Renderer(scene.getScene());
+    this.entities = scene.getEntities();
+    return scene;
+};
 
 Game.prototype.listeners = function () {
     'use strict';
@@ -43,7 +50,7 @@ Game.prototype.update = function () {
     this.entities.forEach(function (item) {
         item.update();
     });
-    this.handleInput();
+    this.input.handleInput(this.renderer.camera, this.currentScene.getPlayer());
 };
 
 Game.prototype.render = function () {
@@ -52,45 +59,6 @@ Game.prototype.render = function () {
     this.entities.forEach(function (item) {
         item.render();
     });
-};
-
-Game.prototype.handleInput = function () {
-    'use strict';
-    if (this.input.isKeyPressed(39)) { // right arrow
-        this.renderer.camera.position.x += 1;
-    }
-    if (this.input.isKeyPressed(37)) {
-        this.renderer.camera.position.x -= 1;
-    }
-    if (this.input.isKeyPressed(38)) {
-        this.renderer.camera.position.y += 1;
-    }
-    if (this.input.isKeyPressed(40)) {
-        this.renderer.camera.position.y -= 1;
-    }
-    if (this.input.isKeyPressed(187)) {
-        if (this.renderer.camera.position.z > 50) {
-            this.renderer.camera.position.z -= 1;
-        }
-    }
-    if (this.input.isKeyPressed(189)) {
-        if (this.renderer.camera.position.z < 400) {
-            this.renderer.camera.position.z += 1;
-        }
-    }
-
-    if (this.input.isKeyPressed(87)) {
-        this.player.position.y += 1;
-    }
-    if (this.input.isKeyPressed(83)) {
-        this.player.position.y -= 1;
-    }
-    if (this.input.isKeyPressed(65)) {
-        this.player.position.x -= 1;
-    }
-    if (this.input.isKeyPressed(68)) {
-        this.player.position.x += 1;
-    }
 };
 
 module.exports = Game;

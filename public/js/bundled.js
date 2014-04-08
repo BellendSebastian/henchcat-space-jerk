@@ -70,15 +70,22 @@ function Game() {
             window.setTimeout(callback, 1000 / 60);
         };
 
-    var testScene = new TestScene();
-
-    this.renderer = new Renderer(testScene.getScene());
-    this.input = new Input();
-    this.entities = testScene.getEntities();
+    // Abstract initialisation of renderer, input
+    // and all that kinda stuff so it can be reused
+    // to switch between scenes
+    this.currentScene = this.initScene(new TestScene());
 
     this.listeners();
     this.loop();
 }
+
+Game.prototype.initScene = function (scene) {
+    'use strict';
+    this.input = scene.getInput();
+    this.renderer = new Renderer(scene.getScene());
+    this.entities = scene.getEntities();
+    return scene;
+};
 
 Game.prototype.listeners = function () {
     'use strict';
@@ -100,7 +107,7 @@ Game.prototype.update = function () {
     this.entities.forEach(function (item) {
         item.update();
     });
-    this.handleInput();
+    this.input.handleInput(this.renderer.camera, this.currentScene.getPlayer());
 };
 
 Game.prototype.render = function () {
@@ -109,45 +116,6 @@ Game.prototype.render = function () {
     this.entities.forEach(function (item) {
         item.render();
     });
-};
-
-Game.prototype.handleInput = function () {
-    'use strict';
-    if (this.input.isKeyPressed(39)) { // right arrow
-        this.renderer.camera.position.x += 1;
-    }
-    if (this.input.isKeyPressed(37)) {
-        this.renderer.camera.position.x -= 1;
-    }
-    if (this.input.isKeyPressed(38)) {
-        this.renderer.camera.position.y += 1;
-    }
-    if (this.input.isKeyPressed(40)) {
-        this.renderer.camera.position.y -= 1;
-    }
-    if (this.input.isKeyPressed(187)) {
-        if (this.renderer.camera.position.z > 50) {
-            this.renderer.camera.position.z -= 1;
-        }
-    }
-    if (this.input.isKeyPressed(189)) {
-        if (this.renderer.camera.position.z < 400) {
-            this.renderer.camera.position.z += 1;
-        }
-    }
-
-    if (this.input.isKeyPressed(87)) {
-        this.player.position.y += 1;
-    }
-    if (this.input.isKeyPressed(83)) {
-        this.player.position.y -= 1;
-    }
-    if (this.input.isKeyPressed(65)) {
-        this.player.position.x -= 1;
-    }
-    if (this.input.isKeyPressed(68)) {
-        this.player.position.x += 1;
-    }
 };
 
 module.exports = Game;
@@ -171,6 +139,48 @@ Input.prototype.keyUp = function (event) {
 Input.prototype.isKeyPressed = function (keyCode) {
     'use strict';
     return this._keysDown[keyCode] !== undefined;
+};
+
+// Hardcoded stuff for testing,
+// can be overridden to do custom
+// inputs for menus or whatnot.
+Input.prototype.handleInput = function (camera, player) {
+    'use strict';
+    if (this.isKeyPressed(39)) { // right arrow
+        camera.position.x += 1;
+    }
+    if (this.isKeyPressed(37)) {
+        camera.position.x -= 1;
+    }
+    if (this.isKeyPressed(38)) {
+        camera.position.y += 1;
+    }
+    if (this.isKeyPressed(40)) {
+        camera.position.y -= 1;
+    }
+    if (this.isKeyPressed(187)) {
+        if (camera.position.z > 50) {
+            camera.position.z -= 1;
+        }
+    }
+    if (this.isKeyPressed(189)) {
+        if (camera.position.z < 400) {
+            camera.position.z += 1;
+        }
+    }
+
+    if (this.isKeyPressed(87)) {
+        player.position.y += 1;
+    }
+    if (this.isKeyPressed(83)) {
+        player.position.y -= 1;
+    }
+    if (this.isKeyPressed(65)) {
+        player.position.x -= 1;
+    }
+    if (this.isKeyPressed(68)) {
+        player.position.x += 1;
+    }
 };
 
 module.exports = Input;
@@ -208,7 +218,7 @@ Renderer.prototype.addShaders = function () {
 
     // RGB Offset shader
     var rgbShader = new THREE.ShaderPass(THREE.RGBShiftShader);
-    rgbShader.uniforms.amount.value = 0.0038;
+    rgbShader.uniforms.amount.value = 0.004;
     rgbShader.uniforms.angle.value = 4;
     this.composer.addPass(rgbShader);
 
@@ -294,10 +304,14 @@ var Game = require('./core/Game');
 window.g = new Game();
 
 },{"./core/Game":4}],10:[function(require,module,exports){
+var Input = require('../core/Input');
+
 function BaseScene() {
     'use strict';
     this.scene = new THREE.Scene();
     this.entities = [];
+    this.input = new Input();
+    this.player = null;
 }
 
 BaseScene.prototype.getScene = function () {
@@ -310,9 +324,19 @@ BaseScene.prototype.getEntities = function () {
     return this.entities;
 };
 
+BaseScene.prototype.getInput = function () {
+    'use strict';
+    return this.input;
+};
+
+BaseScene.prototype.getPlayer = function () {
+    'use strict';
+    return this.player;
+};
+
 module.exports = BaseScene;
 
-},{}],11:[function(require,module,exports){
+},{"../core/Input":5}],11:[function(require,module,exports){
 var BaseScene = require('./BaseScene');
 var Planet = require('../entities/Planet');
 var Player = require('../characters/Player');

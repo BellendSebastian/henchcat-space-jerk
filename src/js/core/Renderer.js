@@ -30,7 +30,7 @@ Renderer.prototype.addShaders = function () {
 
     // RGB Offset shader
     var rgbShader = new THREE.ShaderPass(THREE.RGBShiftShader);
-    rgbShader.uniforms.amount.value = 0.0038;
+    rgbShader.uniforms.amount.value = 0.004;
     rgbShader.uniforms.angle.value = 4;
     this.composer.addPass(rgbShader);
 
