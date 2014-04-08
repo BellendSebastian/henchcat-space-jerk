@@ -325,9 +325,6 @@ function TestScene() {
     'use strict';
     BaseScene.call(this);
 
-    this.scene = new THREE.Scene();
-    this.entities = [];
-
     var testPlanet = new Planet();
     this.entities.push(testPlanet);
     this.scene.add(testPlanet.getMesh());
