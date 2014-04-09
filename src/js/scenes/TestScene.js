@@ -1,6 +1,5 @@
 var BaseScene = require('./BaseScene');
 var Planet = require('../entities/Planet');
-var Player = require('../characters/Player');
 var EnvironmentFactory = require('../utils/EnvironmentFactory');
 
 TestScene.prototype = new BaseScene();
@@ -14,9 +13,6 @@ function TestScene() {
     this.entities.push(testPlanet);
     this.scene.add(testPlanet.getMesh());
 
-    this.player = new Player(this.scene);
-    this.entities.push(this.player);
-
     var sound = new Audio('audio/engine.mp3');
     sound.volume = 0.4;
     sound.addEventListener('ended', function () {
@@ -24,13 +20,6 @@ function TestScene() {
         sound.play();
     }, false);
     sound.play();
-
-    // Basic ambient light
-    var light = new THREE.AmbientLight(0x444444);
-    this.scene.add(light);
-    var delight = new THREE.DirectionalLight(0x444444);
-    delight.position.set(55, 3, 405);
-    this.scene.add(delight);
 
     // Starfield
     this.scene.add(EnvironmentFactory.generateSkybox('img/starfield.jpg'));

@@ -32,4 +32,4 @@ module.exports = {
 
         return new THREE.ParticleSystem(particles, pmat);
     }
-}
+};

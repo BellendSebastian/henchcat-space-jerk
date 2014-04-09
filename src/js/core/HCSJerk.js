@@ -2,7 +2,7 @@ var Renderer = require('./Renderer');
 var Input = require('./Input');
 var TestScene = require('../scenes/TestScene');
 
-function Game() {
+function HCSJerk() {
     'use strict';
 
     // requestAnimationFrame polyfill
@@ -22,7 +22,7 @@ function Game() {
     this.loop();
 }
 
-Game.prototype.initScene = function (scene) {
+HCSJerk.prototype.initScene = function (scene) {
     'use strict';
     this.input = scene.getInput();
     this.renderer = new Renderer(scene.getScene());
@@ -30,21 +30,21 @@ Game.prototype.initScene = function (scene) {
     return scene;
 };
 
-Game.prototype.listeners = function () {
+HCSJerk.prototype.listeners = function () {
     'use strict';
 
     document.addEventListener('keydown', this.input.keyDown.bind(this.input), false);
     document.addEventListener('keyup', this.input.keyUp.bind(this.input), false);
 };
 
-Game.prototype.loop = function () {
+HCSJerk.prototype.loop = function () {
     'use strict';
     this.update();
     this.render();
     window.requestAnimFrame(this.loop.bind(this));
 };
 
-Game.prototype.update = function () {
+HCSJerk.prototype.update = function () {
     'use strict';
     this.renderer.update();
     this.entities.forEach(function (item) {
@@ -53,7 +53,7 @@ Game.prototype.update = function () {
     this.input.handleInput(this.renderer.camera, this.currentScene.getPlayer());
 };
 
-Game.prototype.render = function () {
+HCSJerk.prototype.render = function () {
     'use strict';
     this.renderer.render();
     this.entities.forEach(function (item) {
@@ -61,4 +61,4 @@ Game.prototype.render = function () {
     });
 };
 
-module.exports = Game;
+module.exports = HCSJerk;

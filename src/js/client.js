@@ -1,2 +1,2 @@
-var Game = require('./core/Game');
-window.g = new Game();
+var HCSJerk = require('./core/HCSJerk');
+window.HCSJerk = new HCSJerk();
