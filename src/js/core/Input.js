@@ -37,12 +37,12 @@ Input.prototype.handleInput = function (camera, player) {
     }
     if (this.isKeyPressed(187)) {
         if (camera.position.z > 50) {
-            camera.position.z -= 1;
+            camera.position.z -= 2;
         }
     }
     if (this.isKeyPressed(189)) {
         if (camera.position.z < 400) {
-            camera.position.z += 1;
+            camera.position.z += 2;
         }
     }
 

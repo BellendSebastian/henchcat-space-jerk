@@ -25,6 +25,11 @@ function Renderer(scene) {
     this.addShaders();
 }
 
+Renderer.prototype.changeScene = function (scene) {
+    'use strict';
+    this.scene = scene;
+};
+
 Renderer.prototype.addShaders = function () {
     'use strict';
 

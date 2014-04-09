@@ -86,7 +86,7 @@ var Renderer = require('./Renderer');
 var Input = require('./Input');
 var TestScene = require('../scenes/TestScene');
 
-function Game() {
+function HCSJerk() {
     'use strict';
 
     // requestAnimationFrame polyfill
@@ -106,7 +106,7 @@ function Game() {
     this.loop();
 }
 
-Game.prototype.initScene = function (scene) {
+HCSJerk.prototype.initScene = function (scene) {
     'use strict';
     this.input = scene.getInput();
     this.renderer = new Renderer(scene.getScene());
@@ -114,21 +114,21 @@ Game.prototype.initScene = function (scene) {
     return scene;
 };
 
-Game.prototype.listeners = function () {
+HCSJerk.prototype.listeners = function () {
     'use strict';
 
     document.addEventListener('keydown', this.input.keyDown.bind(this.input), false);
     document.addEventListener('keyup', this.input.keyUp.bind(this.input), false);
 };
 
-Game.prototype.loop = function () {
+HCSJerk.prototype.loop = function () {
     'use strict';
     this.update();
     this.render();
     window.requestAnimFrame(this.loop.bind(this));
 };
 
-Game.prototype.update = function () {
+HCSJerk.prototype.update = function () {
     'use strict';
     this.renderer.update();
     this.entities.forEach(function (item) {
@@ -137,7 +137,7 @@ Game.prototype.update = function () {
     this.input.handleInput(this.renderer.camera, this.currentScene.getPlayer());
 };
 
-Game.prototype.render = function () {
+HCSJerk.prototype.render = function () {
     'use strict';
     this.renderer.render();
     this.entities.forEach(function (item) {
@@ -145,7 +145,7 @@ Game.prototype.render = function () {
     });
 };
 
-module.exports = Game;
+module.exports = HCSJerk;
 
 },{"../scenes/TestScene":11,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
 function Input() {
@@ -187,12 +187,12 @@ Input.prototype.handleInput = function (camera, player) {
     }
     if (this.isKeyPressed(187)) {
         if (camera.position.z > 50) {
-            camera.position.z -= 1;
+            camera.position.z -= 2;
         }
     }
     if (this.isKeyPressed(189)) {
         if (camera.position.z < 400) {
-            camera.position.z += 1;
+            camera.position.z += 2;
         }
     }
 
@@ -239,6 +239,11 @@ function Renderer(scene) {
 
     this.addShaders();
 }
+
+Renderer.prototype.changeScene = function (scene) {
+    'use strict';
+    this.scene = scene;
+};
 
 Renderer.prototype.addShaders = function () {
     'use strict';
@@ -327,18 +332,29 @@ Planet.prototype.update = function () {
 module.exports = Planet;
 
 },{"./BaseEntity":7}],9:[function(require,module,exports){
-var Game = require('./core/Game');
-window.g = new Game();
+var HCSJerk = require('./core/HCSJerk');
+window.HCSJerk = new HCSJerk();
 
-},{"./core/Game":4}],10:[function(require,module,exports){
+},{"./core/HCSJerk":4}],10:[function(require,module,exports){
 var Input = require('../core/Input');
+var Player = require('../characters/Player');
 
 function BaseScene() {
     'use strict';
     this.scene = new THREE.Scene();
     this.entities = [];
     this.input = new Input();
-    this.player = null;
+    this.player = new Player(this.scene);
+
+    this.entities.push(this.player);
+
+    // Basic ambient light
+    var light = new THREE.AmbientLight(0x444444);
+    this.scene.add(light);
+
+    var diLight = new THREE.DirectionalLight(0x444444);
+    diLight.position.set(55, 3, 405);
+    this.scene.add(diLight);
 }
 
 BaseScene.prototype.getScene = function () {
@@ -363,10 +379,9 @@ BaseScene.prototype.getPlayer = function () {
 
 module.exports = BaseScene;
 
-},{"../core/Input":5}],11:[function(require,module,exports){
+},{"../characters/Player":2,"../core/Input":5}],11:[function(require,module,exports){
 var BaseScene = require('./BaseScene');
 var Planet = require('../entities/Planet');
-var Player = require('../characters/Player');
 var EnvironmentFactory = require('../utils/EnvironmentFactory');
 
 TestScene.prototype = new BaseScene();
@@ -380,9 +395,6 @@ function TestScene() {
     this.entities.push(testPlanet);
     this.scene.add(testPlanet.getMesh());
 
-    this.player = new Player(this.scene);
-    this.entities.push(this.player);
-
     var sound = new Audio('audio/engine.mp3');
     sound.volume = 0.4;
     sound.addEventListener('ended', function () {
@@ -391,13 +403,6 @@ function TestScene() {
     }, false);
     sound.play();
 
-    // Basic ambient light
-    var light = new THREE.AmbientLight(0x444444);
-    this.scene.add(light);
-    var delight = new THREE.DirectionalLight(0x444444);
-    delight.position.set(55, 3, 405);
-    this.scene.add(delight);
-
     // Starfield
     this.scene.add(EnvironmentFactory.generateSkybox('img/starfield.jpg'));
     this.scene.add(EnvironmentFactory.generateStars(5000));
@@ -405,15 +410,37 @@ function TestScene() {
 
 module.exports = TestScene;
 
-},{"../characters/Player":2,"../entities/Planet":8,"../utils/EnvironmentFactory":12,"./BaseScene":10}],12:[function(require,module,exports){
+},{"../entities/Planet":8,"../utils/EnvironmentFactory":12,"./BaseScene":10}],12:[function(require,module,exports){
 module.exports = {
     'generateSkybox': function (texturePath) {
         'use strict';
         var geometry = new THREE.CubeGeometry(2000, 2000, 2000);
+
+        var urls = [
+            texturePath,
+            texturePath,
+            texturePath,
+            texturePath,
+            texturePath,
+            texturePath
+        ];
+        var textureCube = new THREE.ImageUtils.loadTextureCube(urls);
+
+        var shader = THREE.ShaderLib.cube;
+        var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
+        uniforms.tCube.texture = textureCube;
+        var material = new THREE.ShaderMaterial({
+            fragmentShader: shader.fragmentShader,
+            vertexShader: shader.vertexShader,
+            uniforms: uniforms,
+            side: THREE.BackSide
+        });
+        /*
         var material = new THREE.MeshBasicMaterial({
             map: THREE.ImageUtils.loadTexture(texturePath),
             side: THREE.BackSide
         });
+        */
         var starfield = new THREE.Mesh(geometry, material);
         starfield.position = new THREE.Vector3(0, 0, 0);
         return starfield;
@@ -440,6 +467,6 @@ module.exports = {
 
         return new THREE.ParticleSystem(particles, pmat);
     }
-}
+};
 
 },{}]},{},[9])
