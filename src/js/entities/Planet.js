@@ -3,6 +3,12 @@ var BaseEntity = require('./BaseEntity');
 Planet.prototype = new BaseEntity();
 Planet.prototype.constructor = Planet;
 
+/**
+ * Test planet class.
+ *
+ * @class
+ * @augments {BaseEntity}
+ */
 function Planet() {
     'use strict';
     BaseEntity.call(this);
@@ -21,6 +27,11 @@ function Planet() {
     this.mesh.position = new THREE.Vector3(-40, 20, -45);
 }
 
+/**
+ * Update the planet's properties each tick.
+ *
+ * @func
+ */
 Planet.prototype.update = function () {
     'use strict';
     this.mesh.rotation.y += 0.0004;

@@ -5,6 +5,13 @@ var EnvironmentFactory = require('../utils/EnvironmentFactory');
 TestScene.prototype = new BaseScene();
 TestScene.prototype.constructor = TestScene;
 
+/**
+ * Test scene for playing around with mood
+ * and stuff like that.
+ *
+ * @class
+ * @augments BaseScene
+ */
 function TestScene() {
     'use strict';
     BaseScene.call(this);

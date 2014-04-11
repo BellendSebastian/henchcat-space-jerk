@@ -3,6 +3,13 @@ var BaseCharacter = require('./BaseCharacter');
 Player.prototype = new BaseCharacter();
 Player.prototype.contstructor = Player;
 
+/**
+ * Default player class.
+ *
+ * @class
+ * @augments BaseCharacter
+ * @param   {THREE.Scene} targetScene - The target scene where to send the mesh on load
+ */
 function Player (targetScene) {
     'use strict';
     BaseCharacter.call(this);
@@ -44,6 +51,11 @@ function Player (targetScene) {
     this.position = new THREE.Vector3(0, 0, 30);
 }
 
+/**
+ * Called each tick from the main game class
+ *
+ * @func
+ */
 Player.prototype.update = function () {
     'use strict';
     if (this.hasLoaded) {
