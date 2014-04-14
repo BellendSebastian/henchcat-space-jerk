@@ -27,7 +27,8 @@ function HCSJerk() {
 
 /**
  * Initialise the current scene by grabbing it's
- * THREE.Scene, entity array and input handler.
+ * THREE.Scene, entity array and input handler,
+ * then returns itself.
  *
  * @param {BaseScene} scene
  * @return {BaseScene}

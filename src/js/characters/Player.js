@@ -16,30 +16,18 @@ function Player (targetScene) {
 
     this.hasLoaded = false;
 
-    /*
-    var geometry = new THREE.CubeGeometry(10, 10, 10);
-    var material = new THREE.MeshPhongMaterial();
-    this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.castShadow = true;
-    this.mesh.receiveShadow = true;
-    */
-    var texture = new THREE.Texture();
-    var loader = new THREE.ImageLoader();
-    loader.load('obj/cat/cat_diff.tga', function (image) {
-        texture.image = image;
-        texture.needsUpdate = true;
-    });
+    var texture = THREE.ImageUtils.loadTexture('obj/cat/cat_diff.png');
 
     var loader = new THREE.OBJLoader();
     var _this = this;
     loader.load('obj/cat/cat.obj', function (object) {
-        /*
+
         object.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
                 child.material.map = texture;
             }
         });
-        */
+
         object.scale = new THREE.Vector3(10, 10, 10);
         object.rotation.y = 90;
         object.castShadow = true;

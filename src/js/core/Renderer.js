@@ -23,7 +23,7 @@ function Renderer(scene) {
     document.body.appendChild(this.renderer.domElement);
 
     // Camera guff
-    this.camera = new THREE.PerspectiveCamera(45, (CONFIG.width / CONFIG.height), 1, 3000);
+    this.camera = new THREE.PerspectiveCamera(45, (CONFIG.width / CONFIG.height), 1, 20000);
     this.camera.position = new THREE.Vector3(0, 0, 100);
     this.cameraLight = new THREE.SpotLight(0xffffff);
     this.cameraLight.castShadow = true;

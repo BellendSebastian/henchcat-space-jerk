@@ -55,16 +55,24 @@ Input.prototype.isKeyPressed = function (keyCode) {
 Input.prototype.handleInput = function (camera, player) {
     'use strict';
     if (this.isKeyPressed(39)) { // right arrow
-        camera.position.x += 1;
+        if (camera.position.x < 750) {
+            camera.position.x += 1;
+        }
     }
     if (this.isKeyPressed(37)) {
-        camera.position.x -= 1;
+        if (camera.position.x > -750) {
+            camera.position.x -= 1;
+        }
     }
     if (this.isKeyPressed(38)) {
-        camera.position.y += 1;
+        if (camera.position.y < 750) {
+            camera.position.y += 1;
+        }
     }
     if (this.isKeyPressed(40)) {
-        camera.position.y -= 1;
+        if (camera.position.y > -750) {
+            camera.position.y -= 1;
+        }
     }
     if (this.isKeyPressed(187)) {
         if (camera.position.z > 50) {

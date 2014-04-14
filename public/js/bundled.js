@@ -1,17 +1,43 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/**
+ * Base character class for extension
+ * with other character classes.
+ *
+ * @class
+ */
 function BaseCharacter() {
     'use strict';
     this.mesh = null;
 }
 
+/**
+ * Updates the character each tick
+ *
+ * @func
+ */
 BaseCharacter.prototype.update = function () {
 
 };
 
+/**
+ * Other things to do on render.
+ *
+ * Most of the rendering happens in the renderer
+ * as opposed to each of the scene's children,
+ * but this is just incase you need to do more
+ * guff.
+ *
+ * @func
+ */
 BaseCharacter.prototype.render = function () {
 
 };
 
+/**
+ * Returns the character's mesh
+ *
+ * @return  {THREE.Mesh} mesh
+ */
 BaseCharacter.prototype.getMesh = function () {
     'use strict';
     return this.mesh;
@@ -25,36 +51,31 @@ var BaseCharacter = require('./BaseCharacter');
 Player.prototype = new BaseCharacter();
 Player.prototype.contstructor = Player;
 
+/**
+ * Default player class.
+ *
+ * @class
+ * @augments BaseCharacter
+ * @param   {THREE.Scene} targetScene - The target scene where to send the mesh on load
+ */
 function Player (targetScene) {
     'use strict';
     BaseCharacter.call(this);
 
     this.hasLoaded = false;
 
-    /*
-    var geometry = new THREE.CubeGeometry(10, 10, 10);
-    var material = new THREE.MeshPhongMaterial();
-    this.mesh = new THREE.Mesh(geometry, material);
-    this.mesh.castShadow = true;
-    this.mesh.receiveShadow = true;
-    */
-    var texture = new THREE.Texture();
-    var loader = new THREE.ImageLoader();
-    loader.load('obj/cat/cat_diff.tga', function (image) {
-        texture.image = image;
-        texture.needsUpdate = true;
-    });
+    var texture = THREE.ImageUtils.loadTexture('obj/cat/cat_diff.png');
 
     var loader = new THREE.OBJLoader();
     var _this = this;
     loader.load('obj/cat/cat.obj', function (object) {
-        /*
+
         object.traverse(function (child) {
             if (child instanceof THREE.Mesh) {
                 child.material.map = texture;
             }
         });
-        */
+
         object.scale = new THREE.Vector3(10, 10, 10);
         object.rotation.y = 90;
         object.castShadow = true;
@@ -66,6 +87,11 @@ function Player (targetScene) {
     this.position = new THREE.Vector3(0, 0, 30);
 }
 
+/**
+ * Called each tick from the main game class
+ *
+ * @func
+ */
 Player.prototype.update = function () {
     'use strict';
     if (this.hasLoaded) {
@@ -86,6 +112,12 @@ var Renderer = require('./Renderer');
 var Input = require('./Input');
 var TestScene = require('../scenes/TestScene');
 
+/**
+ * Main game class, handles the looping and doing
+ * of stuff. p much everything, really.
+ *
+ * @class
+ */
 function HCSJerk() {
     'use strict';
 
@@ -97,15 +129,21 @@ function HCSJerk() {
             window.setTimeout(callback, 1000 / 60);
         };
 
-    // Abstract initialisation of renderer, input
-    // and all that kinda stuff so it can be reused
-    // to switch between scenes
     this.currentScene = this.initScene(new TestScene());
 
     this.listeners();
     this.loop();
 }
 
+/**
+ * Initialise the current scene by grabbing it's
+ * THREE.Scene, entity array and input handler,
+ * then returns itself.
+ *
+ * @param {BaseScene} scene
+ * @return {BaseScene}
+ * @func
+ */
 HCSJerk.prototype.initScene = function (scene) {
     'use strict';
     this.input = scene.getInput();
@@ -114,6 +152,11 @@ HCSJerk.prototype.initScene = function (scene) {
     return scene;
 };
 
+/**
+ * Initialise event listeners
+ *
+ * @func
+ */
 HCSJerk.prototype.listeners = function () {
     'use strict';
 
@@ -121,6 +164,12 @@ HCSJerk.prototype.listeners = function () {
     document.addEventListener('keyup', this.input.keyUp.bind(this.input), false);
 };
 
+/**
+ * The main game loop. Will loop back over itself using
+ * requestAnimationFrame.
+ *
+ * @func
+ */
 HCSJerk.prototype.loop = function () {
     'use strict';
     this.update();
@@ -128,6 +177,11 @@ HCSJerk.prototype.loop = function () {
     window.requestAnimFrame(this.loop.bind(this));
 };
 
+/**
+ * Update child entities and items each loop.
+ *
+ * @func
+ */
 HCSJerk.prototype.update = function () {
     'use strict';
     this.renderer.update();
@@ -137,6 +191,11 @@ HCSJerk.prototype.update = function () {
     this.input.handleInput(this.renderer.camera, this.currentScene.getPlayer());
 };
 
+/**
+ * Render the current scene.
+ *
+ * @func
+ */
 HCSJerk.prototype.render = function () {
     'use strict';
     this.renderer.render();
@@ -148,42 +207,81 @@ HCSJerk.prototype.render = function () {
 module.exports = HCSJerk;
 
 },{"../scenes/TestScene":11,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
+/**
+ * Input handler. Stored on a per scene / screen
+ * basis so you can easily override the rules and
+ * have different behaviour for each screen.
+ *
+ * @class
+ */
 function Input() {
     'use strict';
     this._keysDown = {};
 }
 
+/**
+ * Adds the pressed key to the _keysDown
+ * object for lookup using IsKeysPressed.
+ *
+ * @param {Event} event
+ * @return
+ */
 Input.prototype.keyDown = function (event) {
     'use strict';
     this._keysDown[event.keyCode] = (new Date()).getTime();
 };
 
+/**
+ * Clears the released key from the _keysDown object.
+ *
+ * @param {Event} event
+ * @func
+ */
 Input.prototype.keyUp = function (event) {
     'use strict';
     this._keysDown[event.keyCode] = undefined;
 };
 
+/**
+ * Returns a boolean whether the supplied keyCode
+ * is pressed or not.
+ *
+ * @param {Number} keyCode
+ * @return {Boolean}
+ */
 Input.prototype.isKeyPressed = function (keyCode) {
     'use strict';
     return this._keysDown[keyCode] !== undefined;
 };
 
-// Hardcoded stuff for testing,
-// can be overridden to do custom
-// inputs for menus or whatnot.
+/**
+ * Hardcoded input handling for test scene,
+ * should be overridden, really.
+ *
+ * @param {THREE.PerspectiveCamera} camera
+ * @param {Player} player
+ */
 Input.prototype.handleInput = function (camera, player) {
     'use strict';
     if (this.isKeyPressed(39)) { // right arrow
-        camera.position.x += 1;
+        if (camera.position.x < 750) {
+            camera.position.x += 1;
+        }
     }
     if (this.isKeyPressed(37)) {
-        camera.position.x -= 1;
+        if (camera.position.x > -750) {
+            camera.position.x -= 1;
+        }
     }
     if (this.isKeyPressed(38)) {
-        camera.position.y += 1;
+        if (camera.position.y < 750) {
+            camera.position.y += 1;
+        }
     }
     if (this.isKeyPressed(40)) {
-        camera.position.y -= 1;
+        if (camera.position.y > -750) {
+            camera.position.y -= 1;
+        }
     }
     if (this.isKeyPressed(187)) {
         if (camera.position.z > 50) {
@@ -215,6 +313,18 @@ module.exports = Input;
 },{}],6:[function(require,module,exports){
 var CONFIG = require('../config');
 
+/**
+ * Renderer class. Accepts a THREE.Scene (optional)
+ * and handles creating generic lights and cameras.
+ *
+ * No scene data will be played with here, however,
+ * that should be stored in separate scene classes
+ * and provided to the Renderer on instantiation or
+ * using the changeScene method.
+ *
+ * @class
+ * @param {THREE.Scene} scene
+ */
 function Renderer(scene) {
     'use strict';
     this.renderer = new THREE.WebGLRenderer({
@@ -226,7 +336,7 @@ function Renderer(scene) {
     document.body.appendChild(this.renderer.domElement);
 
     // Camera guff
-    this.camera = new THREE.PerspectiveCamera(45, (CONFIG.width / CONFIG.height), 1, 3000);
+    this.camera = new THREE.PerspectiveCamera(45, (CONFIG.width / CONFIG.height), 1, 20000);
     this.camera.position = new THREE.Vector3(0, 0, 100);
     this.cameraLight = new THREE.SpotLight(0xffffff);
     this.cameraLight.castShadow = true;
@@ -240,11 +350,21 @@ function Renderer(scene) {
     this.addShaders();
 }
 
+/**
+ * Changes the current scene to the one supplied.
+ *
+ * @param {THREE.Scene} scene - The scene to change to
+ */
 Renderer.prototype.changeScene = function (scene) {
     'use strict';
     this.scene = scene;
 };
 
+/**
+ * Applies post-processing shaders to the composer.
+ *
+ * @func
+ */
 Renderer.prototype.addShaders = function () {
     'use strict';
 
@@ -269,11 +389,22 @@ Renderer.prototype.addShaders = function () {
     this.composer.addPass(vignette);
 };
 
+/**
+ * Updates the class each tick
+ *
+ * @func
+ */
 Renderer.prototype.update = function () {
     'use strict';
     this.cameraLightPosition = this.camera.position;
 };
 
+/**
+ * On next animation frame, calls for the composer
+ * to render.
+ *
+ * @func
+ */
 Renderer.prototype.render = function () {
     'use strict';
     this.composer.render();
@@ -282,17 +413,39 @@ Renderer.prototype.render = function () {
 module.exports = Renderer;
 
 },{"../config":3}],7:[function(require,module,exports){
-function BaseEntity() {}
-
-BaseEntity.prototype.update = function () {
+/**
+ * Basic entity class for extension.
+ *
+ * @class
+ */
+function BaseEntity() {
     'use strict';
     this.mesh = null;
+}
+
+/**
+ * Update the object each tick.
+ *
+ * @func
+ */
+BaseEntity.prototype.update = function () {
+    'use strict';
 };
 
+/**
+ * Anything necessary in the render pass.
+ *
+ * @func
+ */
 BaseEntity.prototype.render = function () {
     'use strict';
 };
 
+/**
+ * Returns the current entity's mesh.
+ *
+ * @return {THREE.Mesh} mesh
+ */
 BaseEntity.prototype.getMesh = function () {
     'use strict';
     return this.mesh;
@@ -306,6 +459,12 @@ var BaseEntity = require('./BaseEntity');
 Planet.prototype = new BaseEntity();
 Planet.prototype.constructor = Planet;
 
+/**
+ * Test planet class.
+ *
+ * @class
+ * @augments {BaseEntity}
+ */
 function Planet() {
     'use strict';
     BaseEntity.call(this);
@@ -324,6 +483,11 @@ function Planet() {
     this.mesh.position = new THREE.Vector3(-40, 20, -45);
 }
 
+/**
+ * Update the planet's properties each tick.
+ *
+ * @func
+ */
 Planet.prototype.update = function () {
     'use strict';
     this.mesh.rotation.y += 0.0004;
@@ -339,6 +503,11 @@ window.HCSJerk = new HCSJerk();
 var Input = require('../core/Input');
 var Player = require('../characters/Player');
 
+/**
+ * Basic scene class with all the necessary guff.
+ *
+ * @class
+ */
 function BaseScene() {
     'use strict';
     this.scene = new THREE.Scene();
@@ -357,21 +526,41 @@ function BaseScene() {
     this.scene.add(diLight);
 }
 
+/**
+ * Returns child scene.
+ *
+ * @return {THREE.Scene} scene
+ */
 BaseScene.prototype.getScene = function () {
     'use strict';
     return this.scene;
 };
 
+/**
+ * Returns this scene's entities.
+ *
+ * @return {Array}
+ */
 BaseScene.prototype.getEntities = function () {
     'use strict';
     return this.entities;
 };
 
+/**
+ * Returns this scene's input handler.
+ *
+ * @return {Input}
+ */
 BaseScene.prototype.getInput = function () {
     'use strict';
     return this.input;
 };
 
+/**
+ * Returns this scene's player
+ *
+ * @return {Player}
+ */
 BaseScene.prototype.getPlayer = function () {
     'use strict';
     return this.player;
@@ -387,6 +576,13 @@ var EnvironmentFactory = require('../utils/EnvironmentFactory');
 TestScene.prototype = new BaseScene();
 TestScene.prototype.constructor = TestScene;
 
+/**
+ * Test scene for playing around with mood
+ * and stuff like that.
+ *
+ * @class
+ * @augments BaseScene
+ */
 function TestScene() {
     'use strict';
     BaseScene.call(this);
@@ -411,41 +607,41 @@ function TestScene() {
 module.exports = TestScene;
 
 },{"../entities/Planet":8,"../utils/EnvironmentFactory":12,"./BaseScene":10}],12:[function(require,module,exports){
+/**
+ * Singleton factory class
+ *
+ * @name EnvironmentFactory
+ * @class
+ */
 module.exports = {
+    /**
+     * Generates a skybox with lighting.
+     *
+     * @func
+     * @param {String} texturePath
+     * @return {THREE.Mesh}
+     */
     'generateSkybox': function (texturePath) {
         'use strict';
         var geometry = new THREE.CubeGeometry(2000, 2000, 2000);
 
-        var urls = [
-            texturePath,
-            texturePath,
-            texturePath,
-            texturePath,
-            texturePath,
-            texturePath
-        ];
-        var textureCube = new THREE.ImageUtils.loadTextureCube(urls);
-
-        var shader = THREE.ShaderLib.cube;
-        var uniforms = THREE.UniformsUtils.clone(shader.uniforms);
-        uniforms.tCube.texture = textureCube;
-        var material = new THREE.ShaderMaterial({
-            fragmentShader: shader.fragmentShader,
-            vertexShader: shader.vertexShader,
-            uniforms: uniforms,
-            side: THREE.BackSide
-        });
-        /*
         var material = new THREE.MeshBasicMaterial({
             map: THREE.ImageUtils.loadTexture(texturePath),
             side: THREE.BackSide
         });
-        */
+
         var starfield = new THREE.Mesh(geometry, material);
         starfield.position = new THREE.Vector3(0, 0, 0);
         return starfield;
     },
 
+    /**
+     * Generates a particle system for stars / debris
+     *
+     * @func
+     * @param {Number} count - How many particles to generate
+     * @return {THREE.ParticleSystem}
+     */
     'generateStars': function (count) {
         'use strict';
         var particles = new THREE.Geometry();
@@ -458,8 +654,8 @@ module.exports = {
         });
 
         for (var i = 0; i < count; i++) {
-            var px = Math.random() * 1500 - 500;
-            var py = Math.random() * 1500 - 500;
+            var px = Math.random() * 1500 - 750;
+            var py = Math.random() * 1500 - 750;
             var pz = Math.random() * 300 - 150;
             var particle = new THREE.Vector3(px, py, pz);
             particles.vertices.push(particle);
