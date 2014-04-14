@@ -36,8 +36,21 @@ function Player (targetScene) {
         _this.hasLoaded = true;
         targetScene.add(_this.mesh);
     });
+    this.location = new THREE.Vector2(0, 0);
     this.position = new THREE.Vector3(0, 0, 30);
 }
+
+/**
+ * Change the location coordinates of the player;
+ *
+ * @param {THREE.Vector2} vector
+ * @return {Player}
+ */
+Player.prototype.changeLocation = function (vector) {
+    'use strict';
+    this.location = vector;
+    return this;
+};
 
 /**
  * Called each tick from the main game class

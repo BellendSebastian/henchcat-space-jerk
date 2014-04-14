@@ -9,9 +9,11 @@ Planet.prototype.constructor = Planet;
  * @class
  * @augments {BaseEntity}
  */
-function Planet() {
+function Planet(rotSpeed) {
     'use strict';
     BaseEntity.call(this);
+
+    this.speed = rotSpeed;
 
     var geometry = new THREE.SphereGeometry(50, 32, 32);
     var material = new THREE.MeshPhongMaterial({
@@ -34,7 +36,7 @@ function Planet() {
  */
 Planet.prototype.update = function () {
     'use strict';
-    this.mesh.rotation.y += 0.0004;
+    this.mesh.rotation.y += this.rotSpeed;
 };
 
 module.exports = Planet;

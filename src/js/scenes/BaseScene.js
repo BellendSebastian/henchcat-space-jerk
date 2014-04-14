@@ -1,5 +1,4 @@
 var Input = require('../core/Input');
-var Player = require('../characters/Player');
 
 /**
  * Basic scene class with all the necessary guff.
@@ -11,7 +10,6 @@ function BaseScene() {
     this.scene = new THREE.Scene();
     this.entities = [];
     this.input = new Input();
-    this.player = new Player(this.scene);
 
     this.entities.push(this.player);
 

@@ -84,8 +84,21 @@ function Player (targetScene) {
         _this.hasLoaded = true;
         targetScene.add(_this.mesh);
     });
+    this.location = new THREE.Vector2(0, 0);
     this.position = new THREE.Vector3(0, 0, 30);
 }
+
+/**
+ * Change the location coordinates of the player;
+ *
+ * @param {THREE.Vector2} vector
+ * @return {Player}
+ */
+Player.prototype.changeLocation = function (vector) {
+    'use strict';
+    this.location = vector;
+    return this;
+};
 
 /**
  * Called each tick from the main game class
@@ -111,6 +124,7 @@ module.exports = {
 var Renderer = require('./Renderer');
 var Input = require('./Input');
 var TestScene = require('../scenes/TestScene');
+var Player = require('../characters/Player');
 
 /**
  * Main game class, handles the looping and doing
@@ -130,6 +144,11 @@ function HCSJerk() {
         };
 
     this.currentScene = this.initScene(new TestScene());
+
+    // Create the player so it persists through screens
+    this.player = new Player(this.currentScene.getScene());
+    this.currentScene.entities.push(this.player);
+    this.currentScene.scene.add(this.player);
 
     this.listeners();
     this.loop();
@@ -206,7 +225,7 @@ HCSJerk.prototype.render = function () {
 
 module.exports = HCSJerk;
 
-},{"../scenes/TestScene":11,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
+},{"../characters/Player":2,"../scenes/TestScene":11,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
 /**
  * Input handler. Stored on a per scene / screen
  * basis so you can easily override the rules and
@@ -465,9 +484,11 @@ Planet.prototype.constructor = Planet;
  * @class
  * @augments {BaseEntity}
  */
-function Planet() {
+function Planet(rotSpeed) {
     'use strict';
     BaseEntity.call(this);
+
+    this.speed = rotSpeed;
 
     var geometry = new THREE.SphereGeometry(50, 32, 32);
     var material = new THREE.MeshPhongMaterial({
@@ -490,7 +511,7 @@ function Planet() {
  */
 Planet.prototype.update = function () {
     'use strict';
-    this.mesh.rotation.y += 0.0004;
+    this.mesh.rotation.y += this.rotSpeed;
 };
 
 module.exports = Planet;
@@ -501,7 +522,6 @@ window.HCSJerk = new HCSJerk();
 
 },{"./core/HCSJerk":4}],10:[function(require,module,exports){
 var Input = require('../core/Input');
-var Player = require('../characters/Player');
 
 /**
  * Basic scene class with all the necessary guff.
@@ -513,7 +533,6 @@ function BaseScene() {
     this.scene = new THREE.Scene();
     this.entities = [];
     this.input = new Input();
-    this.player = new Player(this.scene);
 
     this.entities.push(this.player);
 
@@ -568,7 +587,7 @@ BaseScene.prototype.getPlayer = function () {
 
 module.exports = BaseScene;
 
-},{"../characters/Player":2,"../core/Input":5}],11:[function(require,module,exports){
+},{"../core/Input":5}],11:[function(require,module,exports){
 var BaseScene = require('./BaseScene');
 var Planet = require('../entities/Planet');
 var EnvironmentFactory = require('../utils/EnvironmentFactory');
@@ -587,7 +606,7 @@ function TestScene() {
     'use strict';
     BaseScene.call(this);
 
-    var testPlanet = new Planet();
+    var testPlanet = new Planet(0.0004);
     this.entities.push(testPlanet);
     this.scene.add(testPlanet.getMesh());
 
