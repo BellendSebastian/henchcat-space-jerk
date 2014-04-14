@@ -21,6 +21,7 @@ function Renderer(scene) {
     });
     this.renderer.setSize(CONFIG.width, CONFIG.height);
     document.body.appendChild(this.renderer.domElement);
+    this.renderer.domElement.id = 'hcsj-viewport';
 
     // Camera guff
     this.camera = new THREE.PerspectiveCamera(45, (CONFIG.width / CONFIG.height), 1, 20000);

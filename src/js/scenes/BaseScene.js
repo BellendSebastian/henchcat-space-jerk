@@ -11,8 +11,6 @@ function BaseScene() {
     this.entities = [];
     this.input = new Input();
 
-    this.entities.push(this.player);
-
     // Basic ambient light
     var light = new THREE.AmbientLight(0x444444);
     this.scene.add(light);

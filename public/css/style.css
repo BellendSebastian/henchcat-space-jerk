@@ -8,3 +8,9 @@ body {
 canvas {
     margin: 0 auto;
 }
+
+#hcsj-ui {
+    position: absolute;
+    left: 0;
+    top: 0;
+}

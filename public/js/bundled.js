@@ -125,6 +125,7 @@ var Renderer = require('./Renderer');
 var Input = require('./Input');
 var TestScene = require('../scenes/TestScene');
 var Player = require('../characters/Player');
+var BaseUILayer = require('../ui/BaseUILayer');
 
 /**
  * Main game class, handles the looping and doing
@@ -144,11 +145,11 @@ function HCSJerk() {
         };
 
     this.currentScene = this.initScene(new TestScene());
+    this.ui = new BaseUILayer();
 
     // Create the player so it persists through screens
     this.player = new Player(this.currentScene.getScene());
     this.currentScene.entities.push(this.player);
-    this.currentScene.scene.add(this.player);
 
     this.listeners();
     this.loop();
@@ -225,7 +226,7 @@ HCSJerk.prototype.render = function () {
 
 module.exports = HCSJerk;
 
-},{"../characters/Player":2,"../scenes/TestScene":11,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
+},{"../characters/Player":2,"../scenes/TestScene":11,"../ui/BaseUILayer":12,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
 /**
  * Input handler. Stored on a per scene / screen
  * basis so you can easily override the rules and
@@ -353,6 +354,7 @@ function Renderer(scene) {
     });
     this.renderer.setSize(CONFIG.width, CONFIG.height);
     document.body.appendChild(this.renderer.domElement);
+    this.renderer.domElement.id = 'hcsj-viewport';
 
     // Camera guff
     this.camera = new THREE.PerspectiveCamera(45, (CONFIG.width / CONFIG.height), 1, 20000);
@@ -534,8 +536,6 @@ function BaseScene() {
     this.entities = [];
     this.input = new Input();
 
-    this.entities.push(this.player);
-
     // Basic ambient light
     var light = new THREE.AmbientLight(0x444444);
     this.scene.add(light);
@@ -625,7 +625,29 @@ function TestScene() {
 
 module.exports = TestScene;
 
-},{"../entities/Planet":8,"../utils/EnvironmentFactory":12,"./BaseScene":10}],12:[function(require,module,exports){
+},{"../entities/Planet":8,"../utils/EnvironmentFactory":13,"./BaseScene":10}],12:[function(require,module,exports){
+var CONFIG = require('../config');
+
+/**
+ * The base UI layer. Can be extended
+ * to create extra layers ontop.
+ *
+ * @class
+ */
+function BaseUILayer() {
+    'use strict';
+    this.canvas = document.createElement('canvas');
+    document.body.appendChild(this.canvas);
+    console.log(this.canvas);
+    this.canvas.width = CONFIG.width;
+    this.canvas.height = CONFIG.height;
+    this.canvas.id = 'hcsj-ui';
+    this.context = this.canvas.getContext('2d');
+}
+
+module.exports = BaseUILayer;
+
+},{"../config":3}],13:[function(require,module,exports){
 /**
  * Singleton factory class
  *

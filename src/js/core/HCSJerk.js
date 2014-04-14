@@ -2,6 +2,7 @@ var Renderer = require('./Renderer');
 var Input = require('./Input');
 var TestScene = require('../scenes/TestScene');
 var Player = require('../characters/Player');
+var BaseUILayer = require('../ui/BaseUILayer');
 
 /**
  * Main game class, handles the looping and doing
@@ -21,11 +22,11 @@ function HCSJerk() {
         };
 
     this.currentScene = this.initScene(new TestScene());
+    this.ui = new BaseUILayer();
 
     // Create the player so it persists through screens
     this.player = new Player(this.currentScene.getScene());
     this.currentScene.entities.push(this.player);
-    this.currentScene.scene.add(this.player);
 
     this.listeners();
     this.loop();
