@@ -1,4 +1,5 @@
 var BaseCharacter = require('./BaseCharacter');
+var ShipFactory = require('../utils/ShipFactory');
 
 Player.prototype = new BaseCharacter();
 Player.prototype.contstructor = Player;
@@ -13,6 +14,8 @@ Player.prototype.contstructor = Player;
 function Player (targetScene) {
     'use strict';
     BaseCharacter.call(this);
+
+    this.ship = ShipFactory.generateTestShip();
 
     this.hasLoaded = false;
 

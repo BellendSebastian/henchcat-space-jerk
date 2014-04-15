@@ -3,6 +3,7 @@ var Input = require('./Input');
 var TestScene = require('../scenes/TestScene');
 var Player = require('../characters/Player');
 var BaseUILayer = require('../ui/BaseUILayer');
+var Universe = require('../universe/Universe');
 
 /**
  * Main game class, handles the looping and doing
@@ -21,7 +22,9 @@ function HCSJerk() {
             window.setTimeout(callback, 1000 / 60);
         };
 
-    this.currentScene = this.initScene(new TestScene());
+    this.universe = new Universe();
+
+    this.currentScene = this.initScene(this.universe.getCurrentScene());
     this.ui = new BaseUILayer();
 
     // Create the player so it persists through screens
