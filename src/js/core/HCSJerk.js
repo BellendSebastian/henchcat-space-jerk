@@ -73,6 +73,7 @@ HCSJerk.prototype.update = function () {
         item.update();
     });
     this.currentScene.input.handleInput(this.renderer.camera, this.player);
+    this.ui.update(this.player, this.renderer.camera);
 };
 
 /**
@@ -86,6 +87,7 @@ HCSJerk.prototype.render = function () {
     this.currentScene.entities.forEach(function (item) {
         item.render();
     });
+    this.ui.render(this.player);
 };
 
 module.exports = HCSJerk;
