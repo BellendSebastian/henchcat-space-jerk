@@ -1,6 +1,7 @@
 var BaseScene = require('./BaseScene');
 var Planet = require('../entities/Planet');
 var EnvironmentFactory = require('../utils/EnvironmentFactory');
+var Input = require('../core/Input');
 
 TestScene.prototype = new BaseScene();
 TestScene.prototype.constructor = TestScene;
@@ -19,6 +20,7 @@ function TestScene() {
     var testPlanet = new Planet(0.0004);
     this.entities.push(testPlanet);
     this.scene.add(testPlanet.getMesh());
+    this.input = new Input();
 
     var sound = new Audio('audio/engine.mp3');
     sound.volume = 0.4;

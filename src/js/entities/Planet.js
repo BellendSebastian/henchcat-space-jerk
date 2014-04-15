@@ -14,7 +14,7 @@ function Planet(rotSpeed) {
     'use strict';
     BaseEntity.call(this);
 
-    this.resources.push(new MacGuffinite(300));
+    //this.resources.push(new MacGuffinite(300));
 
     this.speed = rotSpeed;
 
@@ -22,7 +22,7 @@ function Planet(rotSpeed) {
     var material = new THREE.MeshPhongMaterial({
         map: THREE.ImageUtils.loadTexture('img/marsmap1k.jpg'),
         bumpMap: THREE.ImageUtils.loadTexture('img/marsbump1k.jpg'),
-        bumpScale: 0.5,
+        bumpScale: 1,
         specularMap: THREE.ImageUtils.loadTexture('img/earthspec1k.jpg'),
         specular: new THREE.Color('grey')
     });
@@ -39,7 +39,7 @@ function Planet(rotSpeed) {
  */
 Planet.prototype.update = function () {
     'use strict';
-    this.mesh.rotation.y += this.rotSpeed;
+    this.mesh.rotation.y += this.speed;
 };
 
 module.exports = Planet;

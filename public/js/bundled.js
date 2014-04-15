@@ -152,7 +152,8 @@ function HCSJerk() {
 
     this.universe = new Universe();
 
-    this.currentScene = this.initScene(this.universe.getCurrentScene());
+    this.currentScene = this.universe.getCurrentScene();
+    this.renderer = new Renderer(this.currentScene.getScene());
     this.ui = new BaseUILayer();
 
     // Create the player so it persists through screens
@@ -164,23 +165,6 @@ function HCSJerk() {
 }
 
 /**
- * Initialise the current scene by grabbing it's
- * THREE.Scene, entity array and input handler,
- * then returns itself.
- *
- * @param {BaseScene} scene
- * @return {BaseScene}
- * @func
- */
-HCSJerk.prototype.initScene = function (scene) {
-    'use strict';
-    this.input = scene.getInput();
-    this.renderer = new Renderer(scene.getScene());
-    this.entities = scene.getEntities();
-    return scene;
-};
-
-/**
  * Initialise event listeners
  *
  * @func
@@ -188,8 +172,8 @@ HCSJerk.prototype.initScene = function (scene) {
 HCSJerk.prototype.listeners = function () {
     'use strict';
 
-    document.addEventListener('keydown', this.input.keyDown.bind(this.input), false);
-    document.addEventListener('keyup', this.input.keyUp.bind(this.input), false);
+    document.addEventListener('keydown', this.currentScene.input.keyDown.bind(this.currentScene.input), false);
+    document.addEventListener('keyup', this.currentScene.input.keyUp.bind(this.currentScene.input), false);
 };
 
 /**
@@ -213,10 +197,10 @@ HCSJerk.prototype.loop = function () {
 HCSJerk.prototype.update = function () {
     'use strict';
     this.renderer.update();
-    this.entities.forEach(function (item) {
+    this.currentScene.entities.forEach(function (item) {
         item.update();
     });
-    this.input.handleInput(this.renderer.camera, this.currentScene.getPlayer());
+    this.currentScene.input.handleInput(this.renderer.camera, this.player);
 };
 
 /**
@@ -227,7 +211,7 @@ HCSJerk.prototype.update = function () {
 HCSJerk.prototype.render = function () {
     'use strict';
     this.renderer.render();
-    this.entities.forEach(function (item) {
+    this.currentScene.entities.forEach(function (item) {
         item.render();
     });
 };
@@ -502,7 +486,7 @@ function Planet(rotSpeed) {
     'use strict';
     BaseEntity.call(this);
 
-    this.resources.push(new MacGuffinite(300));
+    //this.resources.push(new MacGuffinite(300));
 
     this.speed = rotSpeed;
 
@@ -510,7 +494,7 @@ function Planet(rotSpeed) {
     var material = new THREE.MeshPhongMaterial({
         map: THREE.ImageUtils.loadTexture('img/marsmap1k.jpg'),
         bumpMap: THREE.ImageUtils.loadTexture('img/marsbump1k.jpg'),
-        bumpScale: 0.5,
+        bumpScale: 1,
         specularMap: THREE.ImageUtils.loadTexture('img/earthspec1k.jpg'),
         specular: new THREE.Color('grey')
     });
@@ -527,7 +511,7 @@ function Planet(rotSpeed) {
  */
 Planet.prototype.update = function () {
     'use strict';
-    this.mesh.rotation.y += this.rotSpeed;
+    this.mesh.rotation.y += this.speed;
 };
 
 module.exports = Planet;
@@ -623,6 +607,7 @@ module.exports = BaseScene;
 var BaseScene = require('./BaseScene');
 var Planet = require('../entities/Planet');
 var EnvironmentFactory = require('../utils/EnvironmentFactory');
+var Input = require('../core/Input');
 
 TestScene.prototype = new BaseScene();
 TestScene.prototype.constructor = TestScene;
@@ -641,6 +626,7 @@ function TestScene() {
     var testPlanet = new Planet(0.0004);
     this.entities.push(testPlanet);
     this.scene.add(testPlanet.getMesh());
+    this.input = new Input();
 
     var sound = new Audio('audio/engine.mp3');
     sound.volume = 0.4;
@@ -657,7 +643,7 @@ function TestScene() {
 
 module.exports = TestScene;
 
-},{"../entities/Planet":8,"../utils/EnvironmentFactory":21,"./BaseScene":11}],13:[function(require,module,exports){
+},{"../core/Input":5,"../entities/Planet":8,"../utils/EnvironmentFactory":21,"./BaseScene":11}],13:[function(require,module,exports){
 function Hull() {
     'use strict';
     this.strength = 100;
