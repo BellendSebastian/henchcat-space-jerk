@@ -47,6 +47,7 @@ module.exports = BaseCharacter;
 
 },{}],2:[function(require,module,exports){
 var BaseCharacter = require('./BaseCharacter');
+var ShipFactory = require('../utils/ShipFactory');
 
 Player.prototype = new BaseCharacter();
 Player.prototype.contstructor = Player;
@@ -61,6 +62,8 @@ Player.prototype.contstructor = Player;
 function Player (targetScene) {
     'use strict';
     BaseCharacter.call(this);
+
+    this.ship = ShipFactory.generateTestShip();
 
     this.hasLoaded = false;
 
@@ -114,7 +117,7 @@ Player.prototype.update = function () {
 
 module.exports = Player;
 
-},{"./BaseCharacter":1}],3:[function(require,module,exports){
+},{"../utils/ShipFactory":21,"./BaseCharacter":1}],3:[function(require,module,exports){
 module.exports = {
     width: window.innerWidth,
     height: window.innerHeight
@@ -126,6 +129,7 @@ var Input = require('./Input');
 var TestScene = require('../scenes/TestScene');
 var Player = require('../characters/Player');
 var BaseUILayer = require('../ui/BaseUILayer');
+var Universe = require('../universe/Universe');
 
 /**
  * Main game class, handles the looping and doing
@@ -144,7 +148,9 @@ function HCSJerk() {
             window.setTimeout(callback, 1000 / 60);
         };
 
-    this.currentScene = this.initScene(new TestScene());
+    this.universe = new Universe();
+
+    this.currentScene = this.initScene(this.universe.getCurrentScene());
     this.ui = new BaseUILayer();
 
     // Create the player so it persists through screens
@@ -226,7 +232,7 @@ HCSJerk.prototype.render = function () {
 
 module.exports = HCSJerk;
 
-},{"../characters/Player":2,"../scenes/TestScene":11,"../ui/BaseUILayer":12,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
+},{"../characters/Player":2,"../scenes/TestScene":11,"../ui/BaseUILayer":17,"../universe/Universe":19,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
 /**
  * Input handler. Stored on a per scene / screen
  * basis so you can easily override the rules and
@@ -442,6 +448,7 @@ module.exports = Renderer;
 function BaseEntity() {
     'use strict';
     this.mesh = null;
+    this.resources = [];
 }
 
 /**
@@ -476,6 +483,7 @@ module.exports = BaseEntity;
 
 },{}],8:[function(require,module,exports){
 var BaseEntity = require('./BaseEntity');
+var MacGuffinite = require('../tradables/MacGuffinite');
 
 Planet.prototype = new BaseEntity();
 Planet.prototype.constructor = Planet;
@@ -489,6 +497,8 @@ Planet.prototype.constructor = Planet;
 function Planet(rotSpeed) {
     'use strict';
     BaseEntity.call(this);
+
+    this.resources.push(new MacGuffinite(300));
 
     this.speed = rotSpeed;
 
@@ -518,7 +528,7 @@ Planet.prototype.update = function () {
 
 module.exports = Planet;
 
-},{"./BaseEntity":7}],9:[function(require,module,exports){
+},{"../tradables/MacGuffinite":16,"./BaseEntity":7}],9:[function(require,module,exports){
 var HCSJerk = require('./core/HCSJerk');
 window.HCSJerk = new HCSJerk();
 
@@ -625,7 +635,66 @@ function TestScene() {
 
 module.exports = TestScene;
 
-},{"../entities/Planet":8,"../utils/EnvironmentFactory":13,"./BaseScene":10}],12:[function(require,module,exports){
+},{"../entities/Planet":8,"../utils/EnvironmentFactory":20,"./BaseScene":10}],12:[function(require,module,exports){
+function Hull () {
+    'use strict';
+    this.strength = 100;
+}
+
+module.exports = Hull;
+
+},{}],13:[function(require,module,exports){
+function Shield () {
+    'use strict';
+    this.strength = 200;
+}
+
+module.exports = Shield;
+
+},{}],14:[function(require,module,exports){
+function Ship (name, hull, shield) {
+    'use strict';
+    this.name = name;
+    this.hull = hull;
+    this.shield = shield;
+}
+
+module.exports = Ship;
+
+},{}],15:[function(require,module,exports){
+function BaseTradable () {
+    'use strict';
+    this.quantity = 0;
+}
+
+BaseTradable.prototype.setQuantity = function (amount) {
+    'use strict';
+    this.quantity = amount;
+    return this;
+};
+
+BaseTradable.prototype.getQuantity = function () {
+    'use strict';
+    return this.quantity;
+};
+
+module.exports = BaseTradable;
+
+},{}],16:[function(require,module,exports){
+var BaseTradable = require('./BaseTradable');
+
+MacGuffinite.prototype = new BaseTradable();
+MacGuffinite.prototype.constructor = MacGuffinite;
+
+function MacGuffinite (quantity) {
+    'use strict';
+    MacGuffinite.call(this);
+    this.quantity = quantity;
+}
+
+module.exports = MacGuffinite;
+
+},{"./BaseTradable":15}],17:[function(require,module,exports){
 var CONFIG = require('../config');
 
 /**
@@ -647,7 +716,62 @@ function BaseUILayer() {
 
 module.exports = BaseUILayer;
 
-},{"../config":3}],13:[function(require,module,exports){
+},{"../config":3}],18:[function(require,module,exports){
+var TestScene = require('../scenes/TestScene');
+
+/**
+ * A sector of space, can contain multiple planets
+ * or what have you, all contained in it's child scene.
+ *
+ * @class
+ */
+function Sector () {
+    'use strict';
+    this.scene = new TestScene();
+}
+
+/**
+ * Returns the sector's scene;
+ *
+ * @return {BaseScene}
+ */
+Sector.prototype.getScene = function () {
+    'use strict';
+    return this.scene;
+};
+
+module.exports = Sector;
+
+},{"../scenes/TestScene":11}],19:[function(require,module,exports){
+var UniverseFactory = require('../utils/UniverseFactory');
+
+/**
+ * Universe contains multiple sectors and will
+ * handle the map of all of the sectors;
+ *
+ * @class
+ */
+function Universe() {
+    'use strict';
+    this.sectors = UniverseFactory.generateSectors(1);
+    // TODO: Obviously this is just the first sector
+    // in a normal array, this needs to change.
+    this.currentSector = this.sectors[0];
+}
+
+/**
+ * Returns the scene from the current sector.
+ *
+ * @return  {BaseScene}
+ */
+Universe.prototype.getCurrentScene = function () {
+    'use strict';
+    return this.currentSector.getScene();
+};
+
+module.exports = Universe;
+
+},{"../utils/UniverseFactory":22}],20:[function(require,module,exports){
 /**
  * Singleton factory class
  *
@@ -706,4 +830,44 @@ module.exports = {
     }
 };
 
-},{}]},{},[9])
+},{}],21:[function(require,module,exports){
+var Ship = require('../ship/Ship');
+var Hull = require('../ship/Hull');
+var Shield = require('../ship/Shield');
+
+module.exports = {
+    'generateTestShip': function () {
+        'use strict';
+        return new Ship('Test Ship', new Hull(), new Shield());
+    }
+};
+
+},{"../ship/Hull":12,"../ship/Shield":13,"../ship/Ship":14}],22:[function(require,module,exports){
+var Sector = require('../universe/Sector');
+
+/**
+ * Factory class to generate sectors or
+ * child areas for the universe.
+ *
+ * @class
+ * @name UniverseFactory
+ */
+module.exports = {
+    /**
+     * Generates random sectors, at the moment
+     * just one of them.
+     *
+     * @func
+     * @return {Sector|Array}
+     */
+    'generateSectors': function () {
+        'use strict';
+        var sectors = [];
+        for (var i = 0; i < 1; i++) {
+            sectors.push(new Sector());
+        }
+        return sectors;
+    }
+};
+
+},{"../universe/Sector":18}]},{},[9])
