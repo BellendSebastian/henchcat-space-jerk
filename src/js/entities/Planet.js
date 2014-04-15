@@ -1,4 +1,5 @@
 var BaseEntity = require('./BaseEntity');
+var MacGuffinite = require('../tradables/MacGuffinite');
 
 Planet.prototype = new BaseEntity();
 Planet.prototype.constructor = Planet;
@@ -12,6 +13,8 @@ Planet.prototype.constructor = Planet;
 function Planet(rotSpeed) {
     'use strict';
     BaseEntity.call(this);
+
+    this.resources.push(new MacGuffinite(300));
 
     this.speed = rotSpeed;
 

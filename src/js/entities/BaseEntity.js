@@ -6,6 +6,7 @@
 function BaseEntity() {
     'use strict';
     this.mesh = null;
+    this.resources = [];
 }
 
 /**
