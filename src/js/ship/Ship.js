@@ -1,4 +1,4 @@
-function Ship (name, hull, shield) {
+function Ship(name, hull, shield) {
     'use strict';
     this.name = name;
     this.hull = hull;

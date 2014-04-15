@@ -6,7 +6,7 @@ var TestScene = require('../scenes/TestScene');
  *
  * @class
  */
-function Sector () {
+function Sector() {
     'use strict';
     this.scene = new TestScene();
 }

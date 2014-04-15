@@ -1,3 +1,5 @@
+var CONFIG = require('../config');
+
 /**
  * Input handler. Stored on a per scene / screen
  * basis so you can easily override the rules and
@@ -55,22 +57,22 @@ Input.prototype.isKeyPressed = function (keyCode) {
 Input.prototype.handleInput = function (camera, player) {
     'use strict';
     if (this.isKeyPressed(39)) { // right arrow
-        if (camera.position.x < 750) {
+        if (camera.position.x < CONFIG.sectorWidth) {
             camera.position.x += 1;
         }
     }
     if (this.isKeyPressed(37)) {
-        if (camera.position.x > -750) {
+        if (camera.position.x > -CONFIG.sectorWidth) {
             camera.position.x -= 1;
         }
     }
     if (this.isKeyPressed(38)) {
-        if (camera.position.y < 750) {
+        if (camera.position.y < CONFIG.sectorHeight) {
             camera.position.y += 1;
         }
     }
     if (this.isKeyPressed(40)) {
-        if (camera.position.y > -750) {
+        if (camera.position.y > -CONFIG.sectorHeight) {
             camera.position.y -= 1;
         }
     }

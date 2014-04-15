@@ -1,4 +1,4 @@
-function Hull () {
+function Hull() {
     'use strict';
     this.strength = 100;
 }

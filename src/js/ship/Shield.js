@@ -1,4 +1,4 @@
-function Shield () {
+function Shield() {
     'use strict';
     this.strength = 200;
 }

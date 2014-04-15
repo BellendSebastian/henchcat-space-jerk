@@ -1,4 +1,4 @@
-function BaseTradable () {
+function BaseTradable() {
     'use strict';
     this.quantity = 0;
 }

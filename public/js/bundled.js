@@ -117,10 +117,12 @@ Player.prototype.update = function () {
 
 module.exports = Player;
 
-},{"../utils/ShipFactory":21,"./BaseCharacter":1}],3:[function(require,module,exports){
+},{"../utils/ShipFactory":22,"./BaseCharacter":1}],3:[function(require,module,exports){
 module.exports = {
     width: window.innerWidth,
-    height: window.innerHeight
+    height: window.innerHeight,
+    sectorWidth: 750,
+    sectorHeight: 750
 };
 
 },{}],4:[function(require,module,exports){
@@ -232,7 +234,9 @@ HCSJerk.prototype.render = function () {
 
 module.exports = HCSJerk;
 
-},{"../characters/Player":2,"../scenes/TestScene":11,"../ui/BaseUILayer":17,"../universe/Universe":19,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
+},{"../characters/Player":2,"../scenes/TestScene":12,"../ui/BaseUILayer":18,"../universe/Universe":20,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
+var CONFIG = require('../config');
+
 /**
  * Input handler. Stored on a per scene / screen
  * basis so you can easily override the rules and
@@ -290,22 +294,22 @@ Input.prototype.isKeyPressed = function (keyCode) {
 Input.prototype.handleInput = function (camera, player) {
     'use strict';
     if (this.isKeyPressed(39)) { // right arrow
-        if (camera.position.x < 750) {
+        if (camera.position.x < CONFIG.sectorWidth) {
             camera.position.x += 1;
         }
     }
     if (this.isKeyPressed(37)) {
-        if (camera.position.x > -750) {
+        if (camera.position.x > -CONFIG.sectorWidth) {
             camera.position.x -= 1;
         }
     }
     if (this.isKeyPressed(38)) {
-        if (camera.position.y < 750) {
+        if (camera.position.y < CONFIG.sectorHeight) {
             camera.position.y += 1;
         }
     }
     if (this.isKeyPressed(40)) {
-        if (camera.position.y > -750) {
+        if (camera.position.y > -CONFIG.sectorHeight) {
             camera.position.y -= 1;
         }
     }
@@ -336,7 +340,7 @@ Input.prototype.handleInput = function (camera, player) {
 
 module.exports = Input;
 
-},{}],6:[function(require,module,exports){
+},{"../config":3}],6:[function(require,module,exports){
 var CONFIG = require('../config');
 
 /**
@@ -528,12 +532,29 @@ Planet.prototype.update = function () {
 
 module.exports = Planet;
 
-},{"../tradables/MacGuffinite":16,"./BaseEntity":7}],9:[function(require,module,exports){
+},{"../tradables/MacGuffinite":17,"./BaseEntity":7}],9:[function(require,module,exports){
 var HCSJerk = require('./core/HCSJerk');
 window.HCSJerk = new HCSJerk();
 
 },{"./core/HCSJerk":4}],10:[function(require,module,exports){
+var CONFIG = require('../config');
+
+function NavMesh() {
+    'use strict';
+    this.grid = [];
+    for (var y = 0; y < CONFIG.sectorHeight / 10; y++) {
+        this.grid[y] = [];
+        for (var x = 0; x < CONFIG.sectorWidth / 10; x++) {
+            this.grid[y][x] = y * x;
+        }
+    }
+}
+
+module.exports = NavMesh;
+
+},{"../config":3}],11:[function(require,module,exports){
 var Input = require('../core/Input');
+var NavMesh = require('../navigation/NavMesh');
 
 /**
  * Basic scene class with all the necessary guff.
@@ -545,6 +566,7 @@ function BaseScene() {
     this.scene = new THREE.Scene();
     this.entities = [];
     this.input = new Input();
+    this.navMesh = new NavMesh();
 
     // Basic ambient light
     var light = new THREE.AmbientLight(0x444444);
@@ -597,7 +619,7 @@ BaseScene.prototype.getPlayer = function () {
 
 module.exports = BaseScene;
 
-},{"../core/Input":5}],11:[function(require,module,exports){
+},{"../core/Input":5,"../navigation/NavMesh":10}],12:[function(require,module,exports){
 var BaseScene = require('./BaseScene');
 var Planet = require('../entities/Planet');
 var EnvironmentFactory = require('../utils/EnvironmentFactory');
@@ -635,24 +657,24 @@ function TestScene() {
 
 module.exports = TestScene;
 
-},{"../entities/Planet":8,"../utils/EnvironmentFactory":20,"./BaseScene":10}],12:[function(require,module,exports){
-function Hull () {
+},{"../entities/Planet":8,"../utils/EnvironmentFactory":21,"./BaseScene":11}],13:[function(require,module,exports){
+function Hull() {
     'use strict';
     this.strength = 100;
 }
 
 module.exports = Hull;
 
-},{}],13:[function(require,module,exports){
-function Shield () {
+},{}],14:[function(require,module,exports){
+function Shield() {
     'use strict';
     this.strength = 200;
 }
 
 module.exports = Shield;
 
-},{}],14:[function(require,module,exports){
-function Ship (name, hull, shield) {
+},{}],15:[function(require,module,exports){
+function Ship(name, hull, shield) {
     'use strict';
     this.name = name;
     this.hull = hull;
@@ -661,8 +683,8 @@ function Ship (name, hull, shield) {
 
 module.exports = Ship;
 
-},{}],15:[function(require,module,exports){
-function BaseTradable () {
+},{}],16:[function(require,module,exports){
+function BaseTradable() {
     'use strict';
     this.quantity = 0;
 }
@@ -680,21 +702,21 @@ BaseTradable.prototype.getQuantity = function () {
 
 module.exports = BaseTradable;
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 var BaseTradable = require('./BaseTradable');
 
 MacGuffinite.prototype = new BaseTradable();
 MacGuffinite.prototype.constructor = MacGuffinite;
 
-function MacGuffinite (quantity) {
+function MacGuffinite(quantity) {
     'use strict';
-    MacGuffinite.call(this);
+    BaseTradable.call(this);
     this.quantity = quantity;
 }
 
 module.exports = MacGuffinite;
 
-},{"./BaseTradable":15}],17:[function(require,module,exports){
+},{"./BaseTradable":16}],18:[function(require,module,exports){
 var CONFIG = require('../config');
 
 /**
@@ -707,7 +729,6 @@ function BaseUILayer() {
     'use strict';
     this.canvas = document.createElement('canvas');
     document.body.appendChild(this.canvas);
-    console.log(this.canvas);
     this.canvas.width = CONFIG.width;
     this.canvas.height = CONFIG.height;
     this.canvas.id = 'hcsj-ui';
@@ -716,7 +737,7 @@ function BaseUILayer() {
 
 module.exports = BaseUILayer;
 
-},{"../config":3}],18:[function(require,module,exports){
+},{"../config":3}],19:[function(require,module,exports){
 var TestScene = require('../scenes/TestScene');
 
 /**
@@ -725,7 +746,7 @@ var TestScene = require('../scenes/TestScene');
  *
  * @class
  */
-function Sector () {
+function Sector() {
     'use strict';
     this.scene = new TestScene();
 }
@@ -742,7 +763,7 @@ Sector.prototype.getScene = function () {
 
 module.exports = Sector;
 
-},{"../scenes/TestScene":11}],19:[function(require,module,exports){
+},{"../scenes/TestScene":12}],20:[function(require,module,exports){
 var UniverseFactory = require('../utils/UniverseFactory');
 
 /**
@@ -771,7 +792,7 @@ Universe.prototype.getCurrentScene = function () {
 
 module.exports = Universe;
 
-},{"../utils/UniverseFactory":22}],20:[function(require,module,exports){
+},{"../utils/UniverseFactory":23}],21:[function(require,module,exports){
 /**
  * Singleton factory class
  *
@@ -830,7 +851,7 @@ module.exports = {
     }
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var Ship = require('../ship/Ship');
 var Hull = require('../ship/Hull');
 var Shield = require('../ship/Shield');
@@ -842,7 +863,7 @@ module.exports = {
     }
 };
 
-},{"../ship/Hull":12,"../ship/Shield":13,"../ship/Ship":14}],22:[function(require,module,exports){
+},{"../ship/Hull":13,"../ship/Shield":14,"../ship/Ship":15}],23:[function(require,module,exports){
 var Sector = require('../universe/Sector');
 
 /**
@@ -870,4 +891,4 @@ module.exports = {
     }
 };
 
-},{"../universe/Sector":18}]},{},[9])
+},{"../universe/Sector":19}]},{},[9])
