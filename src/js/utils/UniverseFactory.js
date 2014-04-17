@@ -15,10 +15,10 @@ module.exports = {
      * @func
      * @return {Sector|Array}
      */
-    'generateSectors': function () {
+    'generateSectors': function (num) {
         'use strict';
         var sectors = [];
-        for (var i = 0; i < 1; i++) {
+        for (var i = 0; i < num; i++) {
             sectors.push(new Sector());
         }
         return sectors;

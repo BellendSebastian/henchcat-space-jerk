@@ -1,5 +1,4 @@
 var Input = require('../core/Input');
-var NavMesh = require('../navigation/NavMesh');
 
 /**
  * Basic scene class with all the necessary guff.
@@ -11,7 +10,6 @@ function BaseScene() {
     this.scene = new THREE.Scene();
     this.entities = [];
     this.input = new Input();
-    this.navMesh = new NavMesh();
 
     // Basic ambient light
     var light = new THREE.AmbientLight(0x444444);

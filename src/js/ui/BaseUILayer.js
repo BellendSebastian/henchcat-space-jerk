@@ -39,7 +39,7 @@ BaseUILayer.prototype.render = function (player) {
     var _this = this;
     this.debugText.forEach(function (line) {
         _this.context.fillText(line, 11, currentPos);
-        currentPos += 20;
+        currentPos += 12;
     });
 };
 

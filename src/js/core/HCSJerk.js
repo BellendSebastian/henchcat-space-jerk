@@ -4,6 +4,7 @@ var TestScene = require('../scenes/TestScene');
 var Player = require('../characters/Player');
 var BaseUILayer = require('../ui/BaseUILayer');
 var Universe = require('../universe/Universe');
+var NavMesh = require('../navigation/NavMesh');
 
 /**
  * Main game class, handles the looping and doing
@@ -31,6 +32,8 @@ function HCSJerk() {
     // Create the player so it persists through screens
     this.player = new Player(this.currentScene.getScene());
     this.currentScene.entities.push(this.player);
+
+    this.navMesh = new NavMesh(this.renderer);
 
     this.listeners();
     this.loop();

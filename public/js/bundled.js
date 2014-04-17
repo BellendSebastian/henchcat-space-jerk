@@ -132,6 +132,7 @@ var TestScene = require('../scenes/TestScene');
 var Player = require('../characters/Player');
 var BaseUILayer = require('../ui/BaseUILayer');
 var Universe = require('../universe/Universe');
+var NavMesh = require('../navigation/NavMesh');
 
 /**
  * Main game class, handles the looping and doing
@@ -159,6 +160,8 @@ function HCSJerk() {
     // Create the player so it persists through screens
     this.player = new Player(this.currentScene.getScene());
     this.currentScene.entities.push(this.player);
+
+    this.navMesh = new NavMesh(this.renderer);
 
     this.listeners();
     this.loop();
@@ -220,7 +223,7 @@ HCSJerk.prototype.render = function () {
 
 module.exports = HCSJerk;
 
-},{"../characters/Player":2,"../scenes/TestScene":12,"../ui/BaseUILayer":18,"../universe/Universe":20,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
+},{"../characters/Player":2,"../navigation/NavMesh":10,"../scenes/TestScene":12,"../ui/BaseUILayer":18,"../universe/Universe":20,"./Input":5,"./Renderer":6}],5:[function(require,module,exports){
 var CONFIG = require('../config');
 
 /**
@@ -525,22 +528,49 @@ window.HCSJerk = new HCSJerk();
 },{"./core/HCSJerk":4}],10:[function(require,module,exports){
 var CONFIG = require('../config');
 
-function NavMesh() {
+function NavMesh(renderer) {
     'use strict';
     this.grid = [];
-    for (var y = 0; y < CONFIG.sectorHeight / 10; y++) {
+    this.meshSize = 100;
+    for (var y = 0; y < CONFIG.sectorHeight / this.meshSize * 2; y++) {
         this.grid[y] = [];
-        for (var x = 0; x < CONFIG.sectorWidth / 10; x++) {
+        for (var x = 0; x < CONFIG.sectorWidth / this.meshSize * 2; x++) {
             this.grid[y][x] = y * x;
         }
     }
+    this.projector = new THREE.Projector();
+    this.renderer = renderer;
+    document.addEventListener('mousedown', this.mouseDown.bind(this), false);
 }
+
+NavMesh.prototype.mouseDown = function (e) {
+    'use strict';
+    e.preventDefault();
+    var vector = new THREE.Vector3((e.clientX / window.innerWidth) * 2 - 1, (e.clientY / window.innerHeight) * 2 + 1, 0.5);
+    this.projector.unprojectVector(vector, this.renderer.camera);
+    var caster = new THREE.Raycaster(this.renderer.camera.position, vector.sub(this.renderer.camera.position).normalize());
+    var intersects = caster.intersectObjects(this.renderer.scene.children);
+    if (intersects.length > 0) {
+        console.log(intersects);
+        intersects[0].object.material.color.setHex(Math.random() * 0xffffff);
+    }
+};
+
+NavMesh.prototype.initGrid = function () {
+    'use strict';
+    for (var y = 0; y < this.grid.length; y++) {
+        for (var x = 0; x < this.grid[0].length; x++) {
+            var plane = new THREE.Mesh(new THREE.PlaneGeometry(this.meshSize, this.meshSize), new THREE.MeshBasicMaterial());
+            plane.position = new THREE.Vector3((x * this.meshSize) - CONFIG.sectorWidth, (y * this.meshSize) - CONFIG.sectorHeight, -20);
+            this.scene.add(plane);
+        }
+    }
+};
 
 module.exports = NavMesh;
 
 },{"../config":3}],11:[function(require,module,exports){
 var Input = require('../core/Input');
-var NavMesh = require('../navigation/NavMesh');
 
 /**
  * Basic scene class with all the necessary guff.
@@ -552,7 +582,6 @@ function BaseScene() {
     this.scene = new THREE.Scene();
     this.entities = [];
     this.input = new Input();
-    this.navMesh = new NavMesh();
 
     // Basic ambient light
     var light = new THREE.AmbientLight(0x444444);
@@ -605,7 +634,7 @@ BaseScene.prototype.getPlayer = function () {
 
 module.exports = BaseScene;
 
-},{"../core/Input":5,"../navigation/NavMesh":10}],12:[function(require,module,exports){
+},{"../core/Input":5}],12:[function(require,module,exports){
 var BaseScene = require('./BaseScene');
 var Planet = require('../entities/Planet');
 var EnvironmentFactory = require('../utils/EnvironmentFactory');
@@ -748,7 +777,7 @@ BaseUILayer.prototype.render = function (player) {
     var _this = this;
     this.debugText.forEach(function (line) {
         _this.context.fillText(line, 11, currentPos);
-        currentPos += 20;
+        currentPos += 12;
     });
 };
 
@@ -898,10 +927,10 @@ module.exports = {
      * @func
      * @return {Sector|Array}
      */
-    'generateSectors': function () {
+    'generateSectors': function (num) {
         'use strict';
         var sectors = [];
-        for (var i = 0; i < 1; i++) {
+        for (var i = 0; i < num; i++) {
             sectors.push(new Sector());
         }
         return sectors;
