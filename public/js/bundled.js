@@ -541,6 +541,7 @@ function NavMesh(renderer) {
     this.projector = new THREE.Projector();
     this.renderer = renderer;
     document.addEventListener('mousedown', this.mouseDown.bind(this), false);
+    this.initGrid();
 }
 
 NavMesh.prototype.mouseDown = function (e) {
@@ -551,7 +552,6 @@ NavMesh.prototype.mouseDown = function (e) {
     var caster = new THREE.Raycaster(this.renderer.camera.position, vector.sub(this.renderer.camera.position).normalize());
     var intersects = caster.intersectObjects(this.renderer.scene.children);
     if (intersects.length > 0) {
-        console.log(intersects);
         intersects[0].object.material.color.setHex(Math.random() * 0xffffff);
     }
 };
@@ -562,7 +562,7 @@ NavMesh.prototype.initGrid = function () {
         for (var x = 0; x < this.grid[0].length; x++) {
             var plane = new THREE.Mesh(new THREE.PlaneGeometry(this.meshSize, this.meshSize), new THREE.MeshBasicMaterial());
             plane.position = new THREE.Vector3((x * this.meshSize) - CONFIG.sectorWidth, (y * this.meshSize) - CONFIG.sectorHeight, -20);
-            this.scene.add(plane);
+            this.renderer.scene.add(plane);
         }
     }
 };
