@@ -24,16 +24,24 @@ NavMesh.prototype.mouseDown = function (e) {
     var caster = new THREE.Raycaster(this.renderer.camera.position, vector.sub(this.renderer.camera.position).normalize());
     var intersects = caster.intersectObjects(this.renderer.scene.children);
     if (intersects.length > 0) {
-        intersects[0].object.material.color.setHex(Math.random() * 0xffffff);
+        if (intersects[0].object.coords !== undefined) {
+            console.log(intersects[0].object.coords);
+        }
     }
 };
 
 NavMesh.prototype.initGrid = function () {
     'use strict';
+    var material = new THREE.MeshBasicMaterial({
+        opacity: 0.01,
+        transparent: true
+    });
+    var geometry = new THREE.PlaneGeometry(this.meshSize, this.meshSize);
     for (var y = 0; y < this.grid.length; y++) {
         for (var x = 0; x < this.grid[0].length; x++) {
-            var plane = new THREE.Mesh(new THREE.PlaneGeometry(this.meshSize, this.meshSize), new THREE.MeshBasicMaterial());
+            var plane = new THREE.Mesh(geometry, material);
             plane.position = new THREE.Vector3((x * this.meshSize) - CONFIG.sectorWidth, (y * this.meshSize) - CONFIG.sectorHeight, -20);
+            plane.coords = {x: x, y: y};
             this.renderer.scene.add(plane);
         }
     }
